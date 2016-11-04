@@ -3,7 +3,7 @@
 
 void setup()
 {
-  TIME = 6000;
+  TIME = DEFAULT_TIME;
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
