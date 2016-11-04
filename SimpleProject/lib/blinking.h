@@ -15,10 +15,10 @@ void runBlink(int pause)
   delay(pause);
 }
 
-void body(int timeDecrement, int pause, short profileModificator=1)
+void body(int pause, short profileModificator=1)
 {
   runBlink(pause);
-  TIME -= timeDecrement;
+  TIME -= 2 * pause;
   if (TIME < 0)
   {
     TIME = DEFAULT_TIME;
