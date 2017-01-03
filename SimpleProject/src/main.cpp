@@ -2,6 +2,7 @@
 
 
 int leds[] = {LED_BUILTIN, 10, 11, 12};
+SoftwareBlinking blink();
 
 void setup()
 {
@@ -13,9 +14,9 @@ void setup()
 
 void loop()
 {
-  blinkQuery(0, sizeof(leds)/sizeof(int));
-  blinkQuery(sizeof(leds)/sizeof(int) - 1, 0);
-  blinkAll();
+  blink.blinkQuery(0, sizeof(leds)/sizeof(int));
+  blink.blinkQuery(sizeof(leds)/sizeof(int) - 1, 0);
+  blink.blinkAll();
 
   /*
   switch (PROFILE) {
