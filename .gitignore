@@ -1,0 +1,6 @@
+*.a
+ProjectGSM/ProjectGSM/Debug/board.buildinfo
+*.o
+*.d
+*.hex
+*.elf
