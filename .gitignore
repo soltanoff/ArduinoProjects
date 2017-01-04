@@ -1,5 +1,5 @@
 *.a
-ProjectGSM/ProjectGSM/Debug/board.buildinfo
+board.buildinfo
 *.o
 *.d
 *.hex
