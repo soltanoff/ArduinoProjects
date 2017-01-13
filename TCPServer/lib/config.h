@@ -15,6 +15,7 @@ extern std::vector<SOCKET> CLIENT_SOCKETS;
 extern std::vector<CHAR*> CLIENT_IPS;
 
 namespace ServerCfg {
+    const char LOCALHOST[] = "127.0.0.1";
     const u_short PORT = 8082;
     const int PROTOCOL = IPPROTO_TCP;
     const int BACKLOG = 1;
