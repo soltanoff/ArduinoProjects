@@ -4,19 +4,27 @@
 void thread_routine(int client_number, SOCKET client_socket) {
     ClientInteraction client(client_number, client_socket);
 
-
     while (true) {
-        int code = client.user_interact();
+        try {
+            int code = client.exec();
 
-        if (code == 1) continue;
-        if (code == -1) break;
+            // if (code == 1) continue;
+            if (code == -1) return;
+        }
+        catch (int) {
+            client.close();
+            return;
+        }
+        catch (...) {
+            std::cout << "[ERROR] Server get error in thread_routine().\n";
+            client.close();
+            return;
+        }
     }
     shutdown(client_socket, 0);
 }
 
-Server::Server()
-{
-    /* ================================================================= */
+Server::Server() {
     // WSADATA wsaData; // содержит информацию о реализации сокетов Windows
     int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
     // MAKEWORD(2,2) данной функции запрашивает версию WinSock системы и
@@ -46,16 +54,13 @@ Server::Server()
     std::cout << "[STATUS] Server ready.\n";
 }
 
-Server::~Server()
-{
+Server::~Server() {
     // ServerThreads::close_threads();
     // CloseHandle(ServerThreads::ghMutex);
-    shutdown(m_socket, 1);
-    WSACleanup();
+    close();
 }
 
-void Server::accept_socket(SOCKET &AcceptSocket, sockaddr_in &ClientInfo)
-{
+void Server::accept_socket(SOCKET &AcceptSocket, sockaddr_in &ClientInfo) {
     int adrlen = sizeof(ClientInfo);
     AcceptSocket = (SOCKET) SOCKET_ERROR;
 
@@ -63,11 +68,9 @@ void Server::accept_socket(SOCKET &AcceptSocket, sockaddr_in &ClientInfo)
         AcceptSocket = accept(m_socket, (sockaddr* ) &ClientInfo, &adrlen);
 }
 
-void Server::connect_user(SOCKET &AcceptSocket, sockaddr_in &ClientInfo, int count)
-{
+void Server::connect_user(SOCKET &AcceptSocket, sockaddr_in &ClientInfo, int count) {
     std::cout << "[SERVER] Client #" << count + 1 << " connected. " << inet_ntoa(ClientInfo.sin_addr) << std::endl;
     send(AcceptSocket, "ACCEPT", strlen("ACCEPT"), 0);
-
 
     std::thread *thread = new std::thread(thread_routine, count, AcceptSocket);
 
@@ -76,8 +79,7 @@ void Server::connect_user(SOCKET &AcceptSocket, sockaddr_in &ClientInfo, int cou
     CLIENT_THREADS.push_back(thread);
 }
 
-int Server::try_open_server()
-{
+int Server::try_open_socket() {
     // service содержит информация о семействе адресов,
     // IP адрес и номер порта
     service.sin_family = AF_INET; // семейство адресов »нтернет
@@ -103,27 +105,37 @@ int Server::try_open_server()
     return 0;
 }
 
-int Server::exec()
-{
+int Server::exec() {
     int count = 0;
 
     while (true)
     {
-        SOCKET AcceptSocket;
-        sockaddr_in ClientInfo;
+        try {
+            SOCKET AcceptSocket;
+            sockaddr_in ClientInfo;
 
-        accept_socket(AcceptSocket, ClientInfo);
+            accept_socket(AcceptSocket, ClientInfo);
 
-        connect_user(AcceptSocket, ClientInfo, count);
-        count++;
+            connect_user(AcceptSocket, ClientInfo, count);
+            count++;
+        }
+        catch (...){
+            std::cout << "[ERROR] Server get error in Server::exec().\n";
+            close();
+            return 0;
+        }
     }
 }
 
-void Server::start()
-{
+void Server::start() {
     std::cout << "[STATUS] Server started.\n";
     std::cout << "[SERVER] Waiting for a client to connect...\n";
 
-    if (try_open_server() >= 0)
+    if (try_open_socket() >= 0)
         exec();
+}
+
+void Server::close() {
+    shutdown(m_socket, 1);
+    WSACleanup();
 }
