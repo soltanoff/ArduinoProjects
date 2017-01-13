@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iostream>
 #include <iomanip>
 #include "lib/server.h"
