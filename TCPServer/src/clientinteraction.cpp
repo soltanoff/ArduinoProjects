@@ -5,11 +5,11 @@ bool ClientInteraction::get_answer(int &bytesRecv, char *answer) {
     bytesRecv = recv(_client_socket, answer, ServerCfg::BUFF_SIZE, 0);
     if (bytesRecv == 0 || bytesRecv == WSAECONNRESET) {
         std::cout << "[SERVER] Client #" << _client_number + 1 << " disconnected.\n";
-        return false;
+        throw 0;
     }
     if (bytesRecv < 0) {
         std::cout << "[SERVER] Connection lost with client #" << _client_number + 1 << std::endl;
-        return false;
+        throw 0;
     }
     return true;
 }
@@ -21,12 +21,11 @@ bool ClientInteraction::send_message(const char *msg) {
     return true;
 }
 
-int ClientInteraction::user_interact() {
+int ClientInteraction::exec() {
     int bytesRecv = SOCKET_ERROR;
     char recvbuf[ServerCfg::BUFF_SIZE] = "";
 
-    if (!get_answer(bytesRecv, recvbuf))
-        return -1;
+    get_answer(bytesRecv, recvbuf);
 
     std::string str;
 
@@ -44,4 +43,9 @@ int ClientInteraction::user_interact() {
 
 
     return 0;
+}
+
+void ClientInteraction::close() {
+    shutdown(_client_socket, 1);
+    // WSACleanup();
 }
