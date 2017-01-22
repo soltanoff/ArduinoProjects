@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include "src/server/server.h"
+// #include "src/client/client.h"
 
 
 int main()
@@ -17,6 +18,7 @@ int main()
             << aTm->tm_sec << std::endl;
 
     Server s;
+    // Client s;
     s.start();
 
     system("pause");
