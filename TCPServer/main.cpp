@@ -1,6 +1,6 @@
 #include <iostream>
 #include <iomanip>
-#include "lib/server.h"
+#include "src/server/server.h"
 
 
 int main()

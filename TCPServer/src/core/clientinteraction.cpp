@@ -1,7 +1,7 @@
-#include "../lib/clientinteraction.h"
+#include "clientinteraction.h"
 
 
-bool ClientInteraction::get_answer(int &bytesRecv, char *answer) {
+bool ClientInteraction::get_answer(int& bytesRecv, char* answer) {
     bytesRecv = recv(_client_socket, answer, ServerCfg::BUFF_SIZE, 0);
     if (bytesRecv == 0 || bytesRecv == WSAECONNRESET) {
         std::cout << "[SERVER] Client #" << _client_number + 1 << " disconnected.\n";
@@ -14,7 +14,7 @@ bool ClientInteraction::get_answer(int &bytesRecv, char *answer) {
     return true;
 }
 
-bool ClientInteraction::send_message(const char *msg) {
+bool ClientInteraction::send_message(const char* msg) {
     MAIN_MUTEX.lock();
     send(_client_socket, msg, strlen(msg), 0);
     MAIN_MUTEX.unlock();
@@ -35,7 +35,7 @@ int ClientInteraction::exec() {
             << "] Bytes recv: " << bytesRecv << " | [MSG: " << recvbuf << "]\n";
     MAIN_MUTEX.unlock();
 
-    str = "You send my message :) \"";
+    str = "You send to me this message :) \"";
     str += recvbuf;
     str += "\"";
 

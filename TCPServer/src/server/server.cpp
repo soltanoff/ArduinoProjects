@@ -1,4 +1,4 @@
-#include "../lib/server.h"
+#include "server.h"
 
 
 void thread_routine(int client_number, SOCKET client_socket) {
@@ -72,7 +72,7 @@ void Server::connect_user(SOCKET &AcceptSocket, sockaddr_in &ClientInfo, int cou
     std::cout << "[SERVER] Client #" << count + 1 << " connected. " << inet_ntoa(ClientInfo.sin_addr) << std::endl;
     send(AcceptSocket, "ACCEPT", strlen("ACCEPT"), 0);
 
-    std::thread *thread = new std::thread(thread_routine, count, AcceptSocket);
+    std::thread* thread = new std::thread(thread_routine, count, AcceptSocket);
 
     CLIENT_IPS.push_back(inet_ntoa(ClientInfo.sin_addr));
     CLIENT_SOCKETS.push_back(AcceptSocket);

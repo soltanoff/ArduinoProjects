@@ -1,4 +1,4 @@
-#include "../lib/client.h"
+#include "client.h"
 
 
 Client::Client() {
@@ -38,7 +38,7 @@ Client::~Client() {
     close();
 }
 
-bool Client::send_message(const char *msg) {
+bool Client::send_message(const char* msg) {
     send(m_socket, msg, strlen(msg), 0);
     return true;
 }
@@ -59,7 +59,7 @@ void Client::send_command() {
         throw 0;
 }
 
-bool Client::get_answer(int &bytesRecv, char *answer) {
+bool Client::get_answer(int& bytesRecv, char* answer) {
     bytesRecv = recv(m_socket, answer, ServerCfg::BUFF_SIZE, 0);
     if (bytesRecv == 0 || bytesRecv == WSAECONNRESET) {
         printf("[CLIENT] Connection closed.\n");
@@ -72,7 +72,7 @@ bool Client::get_answer(int &bytesRecv, char *answer) {
     return true;
 }
 
-void Client::answer_control(char *answer) {
+void Client::answer_control(char* answer) {
     while (true) {
         std::cin >> answer;
         if ((strlen(answer) > 1 ||
@@ -83,7 +83,7 @@ void Client::answer_control(char *answer) {
     }
 }
 
-void Client::ipaddres_control(char *ip) {
+void Client::ipaddres_control(char* ip) {
     while (true) {
         std::cin >> ip;
         if (inet_addr(ip) == INADDR_NONE) {

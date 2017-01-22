@@ -1,4 +1,4 @@
-#include "../lib/config.h"
+#include "config.h"
 
 
 std::mutex MAIN_MUTEX;
