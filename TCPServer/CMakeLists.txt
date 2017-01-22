@@ -4,7 +4,7 @@ project(server)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp src/server/server.cpp src/core/clientinteraction.cpp src/config/config.cpp)
+set(SOURCE_FILES main.cpp src/server/server.cpp src/client/client.cpp src/core/clientinteraction.cpp src/config/config.cpp)
 add_executable(server ${SOURCE_FILES})
 
 if(WIN32)
