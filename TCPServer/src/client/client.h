@@ -1,9 +1,8 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 /* ================================================================================================================== */
-#include "../config/config.h"
-#include "interaction.h"
-#include "connection.h"
+#include "../core/interaction.h"
+#include "../core/connection.h"
 /* ================================================================================================================== */
 
 
