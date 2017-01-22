@@ -23,12 +23,13 @@ ENGINE = INNODB
 COMMENT = 'Таблица состояния USB-трафика';
 
 
+DELIMITER $$
 
-CREATE TRIGGER `InsertStateForLogRow`
-	AFTER INSERT
-	ON `Logger`
+CREATE TRIGGER InsertStateForLogRow AFTER INSERT ON Logger
 	FOR EACH ROW
-BEGIN
-  INSERT INTO `State` (`id_logger`) VALUES
-    (`new`.`id`);
-END;
+	BEGIN
+	  INSERT INTO State (id_logger) VALUES
+		(new.id);
+	END; $$
+
+DELIMITER ;
