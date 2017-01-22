@@ -10,7 +10,7 @@
 #include <mutex>
 /* ================================================================================================================== */
 extern std::mutex MAIN_MUTEX;
-extern std::vector<std::thread*> CLIENT_THREADS;
+extern std::vector<std::shared_ptr<std::thread>> CLIENT_THREADS;
 extern std::vector<SOCKET> CLIENT_SOCKETS;
 extern std::vector<CHAR*> CLIENT_IPS;
 
