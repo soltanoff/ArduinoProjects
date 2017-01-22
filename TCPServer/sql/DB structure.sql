@@ -1,7 +1,7 @@
 CREATE TABLE `Logger` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `date` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата создания записи',
-  `message varchar(4048) DEFAULT NULL COMMENT 'USB-трафик',
+  `message` varchar(4048) DEFAULT NULL COMMENT 'USB-трафик',
   PRIMARY KEY (`id`)
 )
 ENGINE = INNODB
