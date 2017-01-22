@@ -60,15 +60,15 @@ Server::~Server() {
     close();
 }
 
-void Server::accept_socket(SOCKET &AcceptSocket, sockaddr_in &ClientInfo) {
+void Server::accept_socket(SOCKET& AcceptSocket, sockaddr_in& ClientInfo) {
     int adrlen = sizeof(ClientInfo);
     AcceptSocket = (SOCKET) SOCKET_ERROR;
 
     while (AcceptSocket == SOCKET_ERROR)
-        AcceptSocket = accept(m_socket, (sockaddr* ) &ClientInfo, &adrlen);
+        AcceptSocket = accept(m_socket, (sockaddr* )& ClientInfo, &adrlen);
 }
 
-void Server::connect_user(SOCKET &AcceptSocket, sockaddr_in &ClientInfo, int count) {
+void Server::connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int count) {
     std::cout << "[SERVER] Client #" << count + 1 << " connected. " << inet_ntoa(ClientInfo.sin_addr) << std::endl;
     send(AcceptSocket, "ACCEPT", strlen("ACCEPT"), 0);
 
@@ -87,7 +87,7 @@ int Server::try_open_socket() {
     service.sin_addr.s_addr = INADDR_ANY;
     service.sin_port = htons(ServerCfg::PORT); // номер порта
 
-    if (bind(m_socket, (SOCKADDR*) &service, sizeof(service)) == SOCKET_ERROR)
+    if (bind(m_socket, (SOCKADDR*)& service, sizeof(service)) == SOCKET_ERROR)
     {
         std::cout << "[ERROR: SOCKADDR] bind() failed.\n";
         closesocket(m_socket);

@@ -116,7 +116,7 @@ int Client::try_open_socket() {
     service.sin_addr.s_addr = inet_addr(ipaddres); // локальный IP
     service.sin_port = htons(ServerCfg::PORT); // номер порта
 
-    if (connect(m_socket, (SOCKADDR *) &service, sizeof(service)) == SOCKET_ERROR) {
+    if (connect(m_socket, (SOCKADDR *)& service, sizeof(service)) == SOCKET_ERROR) {
         printf("[ERROR: SOCKADDR] Connection failed.\n");
         closesocket(m_socket);
         WSACleanup();

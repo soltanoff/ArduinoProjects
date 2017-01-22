@@ -16,8 +16,8 @@ public:
     void start();
     void close();
 private:
-    void accept_socket(SOCKET &AcceptSocket, sockaddr_in &ClientInfo);
-    void connect_user(SOCKET &AcceptSocket, sockaddr_in &ClientInfo, int count);
+    void accept_socket(SOCKET& AcceptSocket, sockaddr_in& ClientInfo);
+    void connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int count);
 };
 /* ================================================================================================================== */
 #endif /* SERVER_H */
