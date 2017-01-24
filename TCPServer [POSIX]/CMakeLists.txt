@@ -11,3 +11,4 @@ link_libraries(-lmysqlclient)
 link_libraries(-lpthread)
 
 target_link_libraries(server pthread)
+
