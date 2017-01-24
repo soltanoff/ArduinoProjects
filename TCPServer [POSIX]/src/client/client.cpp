@@ -2,7 +2,7 @@
 #include "client.h"
 
 
-Client::Client() {
+CClient::CClient() {
     //WSADATA wsaData; // содержит информацию о реализации сокетов Windows
     // int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     // MAKEWORD(2,2) данной функции запрашивает версию WinSock системы и
@@ -32,19 +32,19 @@ Client::Client() {
         system("pause");
         return;
     }
-    std::cout << "[STATUS] Client ready.\n";
+    std::cout << "[STATUS] CClient ready.\n";
 }
 
-Client::~Client() {
+CClient::~CClient() {
     close();
 }
 
-bool Client::send_message(const char* msg) {
+bool CClient::send_message(const char* msg) {
     send(m_socket, msg, strlen(msg), 0);
     return true;
 }
 
-void Client::send_command() {
+void CClient::send_command() {
     char sendbuf[ServerCfg::BUFF_SIZE];
     std::cin.clear();
     std::cin.sync();
@@ -60,7 +60,7 @@ void Client::send_command() {
         throw 0;
 }
 
-bool Client::get_answer(int& bytesRecv, char* answer) {
+bool CClient::get_answer(int& bytesRecv, char* answer) {
     bytesRecv = recv(m_socket, answer, ServerCfg::BUFF_SIZE, 0);
     if (bytesRecv == 0) {  // || bytesRecv == WSAECONNRESET) {
         std::cout << "[CLIENT] Connection closed.\n";
@@ -73,7 +73,7 @@ bool Client::get_answer(int& bytesRecv, char* answer) {
     return true;
 }
 
-void Client::answer_control(char* answer) {
+void CClient::answer_control(char* answer) {
     while (true) {
         std::cin >> answer;
         if ((strlen(answer) > 1 ||
@@ -84,7 +84,7 @@ void Client::answer_control(char* answer) {
     }
 }
 
-void Client::ipaddres_control(char* ip) {
+void CClient::ipaddres_control(char* ip) {
     while (true) {
         std::cin >> ip;
         if (inet_addr(ip) == INADDR_NONE) {
@@ -94,7 +94,7 @@ void Client::ipaddres_control(char* ip) {
     }
 }
 
-int Client::try_open_socket() {
+int CClient::try_open_socket() {
     char answear[128];
     char ipaddres[16];
 
@@ -126,7 +126,7 @@ int Client::try_open_socket() {
     return 0;
 }
 
-int Client::exec() {
+int CClient::exec() {
     int bytesRecv = SOCKET_ERROR;
     char recvbuf[ServerCfg::BUFF_SIZE] = "";
 
@@ -143,22 +143,22 @@ int Client::exec() {
             return 0;
         }
         catch (...){
-            std::cout << "[CLIENT] Client get error in Client::exec().\n";
+            std::cout << "[CLIENT] CClient get error in CClient::exec().\n";
             close();
             return 0;
         }
     }
 }
 
-void Client::start() {
-    std::cout << "[STATUS] Client started.\n";
+void CClient::start() {
+    std::cout << "[STATUS] CClient started.\n";
     std::cout << "[CLIENT] Try to connect...\n";
 
     if (try_open_socket() >= 0)
         exec();
 }
 
-void Client::close() {
+void CClient::close() {
     shutdown(m_socket, 1);
     // WSACleanup();
 }

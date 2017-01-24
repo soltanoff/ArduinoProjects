@@ -6,10 +6,10 @@
 /* ================================================================================================================== */
 
 
-class Client: public BaseInteractionClass, public BaseConnectionClass {
+class CClient: public CBaseInteractionClass, public CBaseConnectionClass {
 public:
-    Client();
-    ~Client();
+    CClient();
+    ~CClient();
 
     int try_open_socket();
     int exec();
