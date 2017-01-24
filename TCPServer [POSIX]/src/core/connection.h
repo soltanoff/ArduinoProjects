@@ -3,12 +3,12 @@
 /* ================================================================================================================== */
 #include "../config/config.h"
 /* ================================================================================================================== */
-class BaseConnectionClass {
+class CBaseConnectionClass {
 public:
     virtual int try_open_socket() = 0;
     virtual void start() = 0;
 
-    ~BaseConnectionClass() = default;
+    ~CBaseConnectionClass() = default;
 protected:
     // WSADATA wsaData; // содержит информацию о реализации сокетов Windows
     SOCKET m_socket; // создаем сокет

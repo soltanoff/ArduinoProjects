@@ -5,7 +5,7 @@
 bool ClientInteraction::get_answer(int& bytesRecv, char* answer) {
     bytesRecv = recv(_client_socket, answer, ServerCfg::BUFF_SIZE, 0);
     if (bytesRecv == 0) { // || bytesRecv == WSAECONNRESET) {
-        std::cout << "[SERVER] Client #" << _client_number + 1 << " disconnected.\n";
+        std::cout << "[SERVER] CClient #" << _client_number + 1 << " disconnected.\n";
         throw 0;
     }
     if (bytesRecv < 0) {
@@ -32,7 +32,7 @@ int ClientInteraction::exec() {
 
     MAIN_MUTEX.lock();
     std::cout
-            << "[Client #" << _client_number + 1
+            << "[CClient #" << _client_number + 1
             << "] Bytes recv: " << bytesRecv << " | [MSG: " << recvbuf << "]\n";
     MAIN_MUTEX.unlock();
 
