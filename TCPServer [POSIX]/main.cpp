@@ -22,8 +22,8 @@ int main(int argc, char* argv[])
             << aTm->tm_min << ":" << std::setfill ('0') << std::setw (2)
             << aTm->tm_sec << std::endl;
 
-    // Server s;
-    Client s;
+    // CServer s;
+    CClient s;
     s.start();
     /*QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName("localhost");
