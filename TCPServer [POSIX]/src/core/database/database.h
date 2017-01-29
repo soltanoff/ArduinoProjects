@@ -1,27 +1,16 @@
 #ifndef DATABASE_H
 #define DATABASE_H
-<<<<<<< HEAD
 /* ================================================================================================================== */
-=======
-
->>>>>>> origin/master
 #include <mysql/mysql.h>
 #include <stdio.h>
 #include <iostream>
 #include <string>
 #include <vector>
-<<<<<<< HEAD
 /* ================================================================================================================== */
 typedef std::vector<std::string> QueryResult;
 typedef std::vector<std::vector<std::string>> QueryResultList;
 
 
-=======
-
-typedef std::vector<std::string> QueryResult;
-typedef std::vector<std::vector<std::string>> QueryResultList;
-
->>>>>>> origin/master
 class CDBConnection {
 public:
     CDBConnection() {};

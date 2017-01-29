@@ -3,23 +3,6 @@
 
 
 CClient::CClient() {
-<<<<<<< HEAD
-=======
-    //WSADATA wsaData; // содержит информацию о реализации сокетов Windows
-    // int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    // MAKEWORD(2,2) данной функции запрашивает версию WinSock системы и
-    // устанавливает ее как наивысшую допустимую версию сокетов Windows,
-    // котора¤ может использоваться.
-
-    // if (iResult != NO_ERROR)
-    // {
-    //    std::cout << "[ERROR: WSADATA] Error at WSAStartup()\n";
-    //    WSACleanup();
-    //    system("pause");
-    //    return;
-    //}
-
->>>>>>> origin/master
     have_ip = false;
     m_socket = socket(AF_INET, SOCK_STREAM, ServerCfg::PROTOCOL);
 
@@ -29,7 +12,7 @@ CClient::CClient() {
         system("pause");
         return;
     }
-    std::cout << "[STATUS] CClient ready.\n";
+    std::cout << "[STATUS] Client ready.\n";
 }
 
 CClient::~CClient() {
@@ -42,13 +25,7 @@ bool CClient::send_message(const char* msg) {
 }
 
 void CClient::send_command() {
-<<<<<<< HEAD
     std::string sendbuf;
-=======
-    char sendbuf[ServerCfg::BUFF_SIZE];
-    std::cin.clear();
-    std::cin.sync();
->>>>>>> origin/master
     std::cout << "[CLIENT] Command: ";
 
     std::cin.clear();
@@ -64,13 +41,8 @@ void CClient::send_command() {
 }
 
 bool CClient::get_answer(int& bytesRecv, char* answer) {
-<<<<<<< HEAD
     bytesRecv = recv(m_socket, answer, (size_t) ServerCfg::BUFF_SIZE, 0);
     if (bytesRecv == 0) {
-=======
-    bytesRecv = recv(m_socket, answer, ServerCfg::BUFF_SIZE, 0);
-    if (bytesRecv == 0) {  // || bytesRecv == WSAECONNRESET) {
->>>>>>> origin/master
         std::cout << "[CLIENT] Connection closed.\n";
         throw 0;
     }
@@ -149,11 +121,7 @@ int CClient::exec() {
             return 0;
         }
         catch (...){
-<<<<<<< HEAD
             std::cout << "[CLIENT] Client get error in CClient::exec().\n";
-=======
-            std::cout << "[CLIENT] CClient get error in CClient::exec().\n";
->>>>>>> origin/master
             close();
             return 0;
         }
@@ -161,11 +129,7 @@ int CClient::exec() {
 }
 
 void CClient::start() {
-<<<<<<< HEAD
     std::cout << "[STATUS] Client started.\n";
-=======
-    std::cout << "[STATUS] CClient started.\n";
->>>>>>> origin/master
     std::cout << "[CLIENT] Try to connect...\n";
 
     if (try_open_socket() >= 0)
