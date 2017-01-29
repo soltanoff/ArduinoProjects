@@ -3,11 +3,14 @@
 #include "gsm.h"
 /* ========================================================================= */
 SoftwareGSM *gsm;
+String buf;
+int temp = 0;
 /* ========================================================================= */
 void setup()
 {
-	Serial.begin(115200);  // Скорость порта для связи Arduino с компьютером
+	Serial.begin(DEFAULT_SERIAL_PORT);  // Скорость порта для связи Arduino с компьютером
 	gsm = new SoftwareGSM();
+	digitalWrite(DEFUALT_POWER_PIN, HIGH);
 	Serial.println("[GSM] module started.");
 }
 /* ========================================================================= */
