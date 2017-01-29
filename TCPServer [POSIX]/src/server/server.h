@@ -6,10 +6,10 @@
 /* ================================================================================================================== */
 
 
-class Server: public BaseConnectionClass {
+class CServer: public CBaseConnectionClass {
 public:
-    Server();
-    ~Server();
+    CServer();
+    ~CServer();
 
     int try_open_socket();
     int exec();

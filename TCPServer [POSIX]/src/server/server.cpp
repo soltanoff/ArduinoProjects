@@ -8,8 +8,6 @@ void thread_routine(int client_number, SOCKET client_socket) {
     while (true) {
         try {
             int code = client.exec();
-
-            // if (code == 1) continue;
             if (code == -1) return;
         }
         catch (int) {
@@ -22,46 +20,27 @@ void thread_routine(int client_number, SOCKET client_socket) {
             return;
         }
     }
-    shutdown(client_socket, 0);
 }
 
-Server::Server() {
-    // WSADATA wsaData; // содержит информацию о реализации сокетов Windows
-    // int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-    // MAKEWORD(2,2) данной функции запрашивает версию WinSock системы и
-    // устанавливает ее как наивысшую допустимую версию сокетов Windows
-
-    // if (iResult != NO_ERROR)
-    // {
-    //    std::cout << "[ERROR: WSADATA] Error at WSAStartup()\n";
-    //    WSACleanup();
-    //    system("pause");
-    //    return;
-    // }
-
-    //SOCKET m_socket; // создаем сокет
+CServer::CServer() {
     m_socket = socket(AF_INET, SOCK_STREAM, ServerCfg::PROTOCOL);
     // в качестве параметров используются семейство интернет-адресов (IP),
     // потоковые сокеты и протокол TCP/IP.
 
-    if (m_socket < 0)  // == INVALID_SOCKET)
+    if (m_socket < 0)
     {
-        std::cout << "[ERROR: SOCKET] Error at socket()" << std::endl;  // : " << WSAGetLastError() << std::endl;
-        // WSAGetLastError возвращает номер последней возникнувшей ошибки
-        // WSACleanup();
+        std::cout << "[ERROR: SOCKET] Error at socket()" << std::endl;
         system("pause");
         return;
     }
     std::cout << "[STATUS] Server ready.\n";
 }
 
-Server::~Server() {
-    // ServerThreads::close_threads();
-    // CloseHandle(ServerThreads::ghMutex);
+CServer::~CServer() {
     close();
 }
 
-void Server::accept_socket(SOCKET& AcceptSocket, sockaddr_in& ClientInfo) {
+void CServer::accept_socket(SOCKET& AcceptSocket, sockaddr_in& ClientInfo) {
     int adrlen = sizeof(ClientInfo);
     AcceptSocket = (SOCKET) SOCKET_ERROR;
 
@@ -69,7 +48,7 @@ void Server::accept_socket(SOCKET& AcceptSocket, sockaddr_in& ClientInfo) {
         AcceptSocket = accept(m_socket, (sockaddr* )& ClientInfo, (socklen_t *) &adrlen);
 }
 
-void Server::connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int count) {
+void CServer::connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int count) {
     std::cout << "[SERVER] Client #" << count + 1 << " connected. " << inet_ntoa(ClientInfo.sin_addr) << std::endl;
     send(AcceptSocket, "ACCEPT", strlen("ACCEPT"), 0);
 
@@ -81,7 +60,7 @@ void Server::connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int cou
     CLIENT_THREADS.push_back(thread);
 }
 
-int Server::try_open_socket() {
+int CServer::try_open_socket() {
     // service содержит информация о семействе адресов,
     // IP адрес и номер порта
     service.sin_family = AF_INET; // семейство адресов »нтернет
@@ -91,8 +70,6 @@ int Server::try_open_socket() {
     if (bind(m_socket, (sockaddr*)& service, sizeof(service)) == SOCKET_ERROR)
     {
         std::cout << "[ERROR: sockaddr] bind() failed.\n";
-        // closesocket(m_socket);
-        // WSACleanup();
         system("pause");
         return -1;
     }
@@ -100,14 +77,13 @@ int Server::try_open_socket() {
     if (listen(m_socket, ServerCfg::BACKLOG) == SOCKET_ERROR)
     {
         std::cout << "[ERROR: LISTEN] Error listening on socket.\n";
-        // WSACleanup();
         system("pause");
         return -1;
     }
     return 0;
 }
 
-int Server::exec() {
+int CServer::exec() {
     int count = 0;
 
     while (true)
@@ -122,14 +98,14 @@ int Server::exec() {
             count++;
         }
         catch (...){
-            std::cout << "[ERROR] Server get error in Server::exec().\n";
+            std::cout << "[ERROR] Server get error in CServer::exec().\n";
             close();
             return 0;
         }
     }
 }
 
-void Server::start() {
+void CServer::start() {
     std::cout << "[STATUS] Server started.\n";
     std::cout << "[SERVER] Waiting for a client to connect...\n";
 
@@ -137,7 +113,6 @@ void Server::start() {
         exec();
 }
 
-void Server::close() {
+void CServer::close() {
     shutdown(m_socket, 1);
-    // WSACleanup();
 }
