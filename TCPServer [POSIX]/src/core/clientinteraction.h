@@ -7,7 +7,7 @@
 void thread_routine(int client_number, SOCKET client_socket);
 
 
-class ClientInteraction: public BaseInteractionClass {
+class ClientInteraction: public CBaseInteractionClass {
 public:
     ClientInteraction(int client_number, SOCKET client_socket) :
             _client_number(client_number), _client_socket(client_socket) {}

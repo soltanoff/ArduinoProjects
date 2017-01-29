@@ -1,10 +1,11 @@
 #include <cstring>
 #include "clientinteraction.h"
+#include "commands/scheduler.h"
 
 
 bool ClientInteraction::get_answer(int& bytesRecv, char* answer) {
     bytesRecv = recv(_client_socket, answer, ServerCfg::BUFF_SIZE, 0);
-    if (bytesRecv == 0) { // || bytesRecv == WSAECONNRESET) {
+    if (bytesRecv == 0) {
         std::cout << "[SERVER] Client #" << _client_number + 1 << " disconnected.\n";
         throw 0;
     }
@@ -36,17 +37,16 @@ int ClientInteraction::exec() {
             << "] Bytes recv: " << bytesRecv << " | [MSG: " << recvbuf << "]\n";
     MAIN_MUTEX.unlock();
 
-    str = "You send to me this message :) \"";
-    str += recvbuf;
-    str += "\"";
+    std::string result = command_scheduler(std::string(recvbuf));
 
-    send_message(str.c_str());
-
-
+    if (result.empty())
+        send_message(" ");
+    else {
+        send_message(result.c_str());
+    }
     return 0;
 }
 
 void ClientInteraction::close() {
     shutdown(_client_socket, 1);
-    // WSACleanup();
 }
