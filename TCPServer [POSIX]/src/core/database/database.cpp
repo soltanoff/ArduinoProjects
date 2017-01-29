@@ -66,6 +66,10 @@ QueryResult CDBConnection::get_record(const char* stmt) {
 
     if ((row = mysql_fetch_row(res)) != NULL) {
         for (unsigned int i = 0; i < res->field_count; i++) {
+<<<<<<< HEAD
+=======
+            // std::cout << "\"" << row[i] << "\"" << " ";
+>>>>>>> origin/master
             result.push_back(std::string(row[i]));
         }
     }
@@ -82,6 +86,10 @@ QueryResultList CDBConnection::get_record_list(const char* stmt) {
     while ((row = mysql_fetch_row(res)) != NULL) {
         QueryResult result_row;
         for (unsigned int i = 0; i < res->field_count; i++) {
+<<<<<<< HEAD
+=======
+            // std::cout << "\"" << row[i] << "\"" << " ";
+>>>>>>> origin/master
             result_row.push_back(std::string(row[i]));
         }
         result.push_back(result_row);

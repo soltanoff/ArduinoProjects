@@ -15,7 +15,7 @@ void thread_routine(int client_number, SOCKET client_socket) {
             return;
         }
         catch (...) {
-            std::cout << "[ERROR] Server get error in thread_routine().\n";
+            std::cout << "[ERROR] CServer get error in thread_routine().\n";
             client.close();
             return;
         }
@@ -23,6 +23,23 @@ void thread_routine(int client_number, SOCKET client_socket) {
 }
 
 CServer::CServer() {
+<<<<<<< HEAD
+=======
+    // WSADATA wsaData; // содержит информацию о реализации сокетов Windows
+    // int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+    // MAKEWORD(2,2) данной функции запрашивает версию WinSock системы и
+    // устанавливает ее как наивысшую допустимую версию сокетов Windows
+
+    // if (iResult != NO_ERROR)
+    // {
+    //    std::cout << "[ERROR: WSADATA] Error at WSAStartup()\n";
+    //    WSACleanup();
+    //    system("pause");
+    //    return;
+    // }
+
+    //SOCKET m_socket; // создаем сокет
+>>>>>>> origin/master
     m_socket = socket(AF_INET, SOCK_STREAM, ServerCfg::PROTOCOL);
     // в качестве параметров используются семейство интернет-адресов (IP),
     // потоковые сокеты и протокол TCP/IP.
@@ -33,10 +50,15 @@ CServer::CServer() {
         system("pause");
         return;
     }
-    std::cout << "[STATUS] Server ready.\n";
+    std::cout << "[STATUS] CServer ready.\n";
 }
 
 CServer::~CServer() {
+<<<<<<< HEAD
+=======
+    // ServerThreads::close_threads();
+    // CloseHandle(ServerThreads::ghMutex);
+>>>>>>> origin/master
     close();
 }
 
@@ -49,7 +71,11 @@ void CServer::accept_socket(SOCKET& AcceptSocket, sockaddr_in& ClientInfo) {
 }
 
 void CServer::connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int count) {
+<<<<<<< HEAD
     std::cout << "[SERVER] Client #" << count + 1 << " connected. " << inet_ntoa(ClientInfo.sin_addr) << std::endl;
+=======
+    std::cout << "[SERVER] CClient #" << count + 1 << " connected. " << inet_ntoa(ClientInfo.sin_addr) << std::endl;
+>>>>>>> origin/master
     send(AcceptSocket, "ACCEPT", strlen("ACCEPT"), 0);
 
     // std::thread* thread = new std::thread(thread_routine, count, AcceptSocket);
@@ -98,7 +124,11 @@ int CServer::exec() {
             count++;
         }
         catch (...){
+<<<<<<< HEAD
             std::cout << "[ERROR] Server get error in CServer::exec().\n";
+=======
+            std::cout << "[ERROR] CServer get error in CServer::exec().\n";
+>>>>>>> origin/master
             close();
             return 0;
         }
@@ -106,7 +136,11 @@ int CServer::exec() {
 }
 
 void CServer::start() {
+<<<<<<< HEAD
     std::cout << "[STATUS] Server started.\n";
+=======
+    std::cout << "[STATUS] CServer started.\n";
+>>>>>>> origin/master
     std::cout << "[SERVER] Waiting for a client to connect...\n";
 
     if (try_open_socket() >= 0)

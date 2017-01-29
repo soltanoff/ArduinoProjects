@@ -39,8 +39,13 @@ int main(int argc, char* argv[])
             << aTm->tm_min << ":" << std::setfill ('0') << std::setw (2)
             << aTm->tm_sec << std::endl;
 
+<<<<<<< HEAD
     CServer s;
     // CClient s;
+=======
+    // CServer s;
+    CClient s;
+>>>>>>> origin/master
     s.start();
 
     // test_db();
