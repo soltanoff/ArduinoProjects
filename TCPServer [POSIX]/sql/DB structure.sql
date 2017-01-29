@@ -13,7 +13,7 @@ CREATE TABLE `State` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_logger` int(11) DEFAULT NULL COMMENT ' id USB-трафика {Logger}',
   `modify_date` datetime DEFAULT NULL COMMENT 'Дата изменения записи',
-  `is_readed` tinyint(1) DEFAULT 0 COMMENT 'Флаг непрочитанной записи',
+  `is_read` tinyint(1) DEFAULT 0 COMMENT 'Флаг непрочитанной записи',
   `deleted` tinyint(1) DEFAULT 0 COMMENT 'Флаг удаленной записи',
   PRIMARY KEY (`id`),
   CONSTRAINT `FK_state_id_logger` FOREIGN KEY (`id_logger`)
