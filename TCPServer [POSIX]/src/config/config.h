@@ -22,10 +22,16 @@ extern std::vector<char*> CLIENT_IPS;
 
 namespace ServerCfg {
     const char LOCALHOST[] = "127.0.0.1";
-    const u_short PORT = 8082;
+    const u_short PORT = 8084;
     const int PROTOCOL = IPPROTO_TCP;
     const int BACKLOG = 1;
     const int BUFF_SIZE = 1024;
+    // Database
+    const std::string DB_ADDRESS = "127.0.0.1";
+    const std::string DATABASE = "logger";
+    const std::string DB_USER = "root";
+    const std::string DB_PASSWORD = "dbpassword";
+    const unsigned int port = 3306;
 }
 /* ================================================================================================================== */
 #endif /* CONFIG_H */
