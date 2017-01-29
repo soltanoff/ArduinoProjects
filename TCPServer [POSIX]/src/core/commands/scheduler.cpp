@@ -2,11 +2,26 @@
 
 // ====================================================================================================================
 // COMMAND FUNCTIONS PROTOTYPES
-void* foo(const void* arg);  // cmd: test
+std::string help(const std::string arg);  // cmd: help
+std::string test(const std::string arg);  // cmd: test
+std::string store(const std::string arg); // cmd: store <args>
+std::string get_all(const std::string arg); // cmd: getall
+std::string get_read(const std::string arg); // cmd: get_read
+std::string get_unread(const std::string arg); // cmd: get_unread
+std::string set_read_all(const std::string arg); // cmd: set_read_all
+std::string clear_db(const std::string arg); // cmd: clear_db
 // ====================================================================================================================
 // COMMAND LIST
 std::vector<std::shared_ptr<CCommand>> COMMAND_LIST = {
-        std::shared_ptr<CCommand>(new CCommand("test", &foo, false))
+        std::shared_ptr<CCommand>(new CCommand("help", &help, true)),
+        std::shared_ptr<CCommand>(new CCommand("test", &test, true)),
+        std::shared_ptr<CCommand>(new CCommand("store", &store, true)),
+        std::shared_ptr<CCommand>(new CCommand("get_all", &get_all, false)),
+        std::shared_ptr<CCommand>(new CCommand("get_read", &get_read, false)),
+        std::shared_ptr<CCommand>(new CCommand("get_unread", &get_unread, false)),
+        std::shared_ptr<CCommand>(new CCommand("set_read_all", &set_read_all, false)),
+        std::shared_ptr<CCommand>(new CCommand("clear_db", &clear_db, false)),
+
 };
 // ====================================================================================================================
 // SCHEDULER
@@ -18,9 +33,10 @@ std::vector<std::shared_ptr<CCommand>> COMMAND_LIST = {
  * 2) 0     - строка команды введена неверно
  * 3) 1     - команда не найдена
  */
-void* command_sheduler(const std::string command) {
-    const std::regex re("(\\w+)\\s*(\\w+)?\\s*");
+std::string command_scheduler(const std::string command) {
+    const std::regex re("(\\w+)\\s*(.*)?\\s*");
     std::smatch result;
+    std::string error;
 
     try {
         if (std::regex_search(command, result, re)) {
@@ -30,22 +46,28 @@ void* command_sheduler(const std::string command) {
             for (auto it = COMMAND_LIST.begin(); it != COMMAND_LIST.end(); it++) {
                 if (cmd.compare((*it)->signature) == 0) {
                     std::cout << "[SERVER] Command execute: "+ cmd << std::endl;
-                    return (*it)->call((void*)args.c_str());
+                    return (*it)->call(args);
                 }
             }
-            std::cout << "[SERVER] Command not found: "+ cmd << std::endl;
-            return (void*) 1;
+
+            error = "Unknown command: "+ command;
+            std::cout << "[SERVER] " << error << std::endl;
+            return error;
         } else {
-            std::cout << "[SERVER] Command string is incorrect: "+ command << std::endl;
-            return (void*) 0;
+            error = "[SERVER] Command string is incorrect: "+ command;
+            std::cout << error << std::endl;
+            return error;
         }
     }
-    catch(const std::exception& ex) {
-        std::cout << "[ERROR] Command Scheduler failed: " << ex.what();
-        return (void*) -1;
+    catch(std::exception& ex) {
+        error = "[ERROR] Command Scheduler failed: ";
+        error += ex.what();
+        std::cout << error << std::endl;
+        return error;
     }
     catch(...) {
-        std::cout << "[ERROR] Command Scheduler have fatal error.";
-        return (void*) -1;
+        error = "[ERROR] Command Scheduler have fatal error.";
+        std::cout << error << std::endl;
+        return error;
     }
 }
