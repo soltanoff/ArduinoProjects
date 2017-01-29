@@ -3,12 +3,17 @@
 /* ========================================================================= */
 SoftwareGSM::SoftwareGSM(short rx, short tx, long serial_port)
 {
+	this->_is_server_connect = false;
 	this->_rx_pin = rx;
 	this->_tx_pin = tx;
 	this->_serial_port = serial_port;
 
 	this->_gsm_serial = new SoftwareSerial(_rx_pin, _tx_pin);
-	this->_gsm_serial->begin(this->_serial_port);  // �������� ����� ��� ����� Arduino � GSM �������
+	this->_gsm_serial->begin(this->_serial_port);  // Скорость порта для связи Arduino с GSM модулем
+	
+	delay(100);
+	this->_gsm_serial->println("AT+IPR=" + String(this->_serial_port));  // устанавливаем скорость шилда
+	delay(100);
 	
 	this->_speaker = new SoftwareSpeaker();
 	this->_speaker->module_initional();
@@ -24,47 +29,112 @@ SoftwareGSM::SoftwareGSM(short rx, short tx, long serial_port)
 /* ========================================================================= */
 void SoftwareGSM::send_sms(const char *phone_number, const char *text)
 {
-	Serial.println("AT+CMGF=1");
+	this->_gsm_serial->println("AT+CMGF=1");
 	delay(2000);
 
-	Serial.print("AT+CMGS=\"");
-	Serial.print(phone_number);
-	Serial.write(0x22);
-	Serial.write(0x0D);	// hex ��� �������� �������� 
-	Serial.write(0x0A);	// hex ��� ����� ������
+	this->_gsm_serial->print("AT+CMGS=\"");
+	this->_gsm_serial->print(phone_number);
+	this->_gsm_serial->write(0x22);
+	this->_gsm_serial->write(0x0D);	// hex код возврата коректки 
+	this->_gsm_serial->write(0x0A);	// hex код новой строки
 
 	// delay(2000);
-	Serial.print(text);
+	this->_gsm_serial->print(text);
 	delay(500);
 
-	Serial.println(char(26));	// ASCII ��� �trl+Z
+	this->_gsm_serial->println(char(26));	// ASCII код Сtrl+Z
 	delay(1000);
 
-	Serial.println("AT+CMGF=0");
+	// Serial.println("AT+CMGF=0");
 	this->_speaker->sms_sending();
 }
 /* ========================================================================= */
 void SoftwareGSM::call_number(const char *phone_number)
 {
-	Serial.print("ATD");
-	Serial.println(phone_number);
+	this->_gsm_serial->print("ATD");
+	this->_gsm_serial->println(phone_number);
 	// Serial.println(";");
 	delay(10000);
-	Serial.println("ATH");
+	this->_gsm_serial->println("ATH");
+}
+/* ========================================================================= */
+void SoftwareGSM::connect_to_server(String ip, String port)
+{
+	this->_gsm_serial->println("AT+CGATT=1"); // // Прикрепиться сети если 1, 
+	// открепиться если 0 (длительность: 8 сек)
+	delay(8000);
+	// Задаем контекст поключения PDP (Packet Data Protocol)
+	// 1 - индентификатор контекста PDP (max 7)
+	// "IP" - тип протокола (PDP type: IP, IPV6, PPP Point to Point Protocol)
+	// "cmnet" - имя точки доступа
+	this->_gsm_serial->println("AT+CGDCONT=1,\"IP\",\"cmnet\"");
+	delay(10);
+	// Активируем заданный контекст (длительность: 3-4 сек)
+	// 1 - состояние (вкл/выкл)
+	// 1 - индентификатор контекста PDP
+	this->_gsm_serial->println("AT+CGACT=1,1");
+	delay(10);
+	// Начать TCP/UDP подключение 
+	// (длительность: 2-3 сек)
+	this->_gsm_serial->println("AT+CIPSTART=\"TCP\",\"" + ip + "\", " + port);
+	delay(3000);
+	this->_gsm_serial->println("AT+CIPSEND=4, \"help\"");
+
+	this->_is_server_connect = true;
+}
+/* ========================================================================= */
+void SoftwareGSM::disconnect_server()
+{
+	this->_gsm_serial->println("AT+CIPCLOSE");
+	this->_is_server_connect = false;
+}
+/* ========================================================================= */
+void SoftwareGSM::send(String &command)
+{
+	if (command.indexOf("dsc") > -1 && this->_is_server_connect)
+		this->disconnect_server();
+	else
+		if (command.indexOf("cnct") > -1)
+			this->connect_to_server("31.207.65.87", "8082");
+
+	if (this->_is_server_connect)
+	{
+		this->_gsm_serial->println(
+			"AT+CIPSEND=" + String(command.length()) + ", \"" + command + "\""
+		);
+	}
+	else
+	{
+		this->_gsm_serial->println(command);
+	}
 }
 /* ========================================================================= */
 void SoftwareGSM::execute()
 {
-	// Serial.println(this->_gsm_serial->available());
+	// GSM MODULE SERIAL
 	if (this->_gsm_serial->available())
 	{
-		Serial.write(this->_gsm_serial->read());
-		// this->_speaker->serial_answear();
+		while (this->_gsm_serial->available())
+		{
+			_serial_buf += char(this->_gsm_serial->read());// char(buf);
+			delay(10);
+		}
+		Serial.println(_serial_buf);
+		this->_speaker->serial_answear();
 	}
+	_serial_buf = "";
+	// SOFTWARE SERIAL
 	if (Serial.available())
 	{
-		this->_gsm_serial->write(Serial.read());
-		// this->_speaker->serial_sending();
+		while (Serial.available())
+		{
+			_serial_buf += char(Serial.read());// char(buf);
+			delay(10);
+		}
+
+		this->send(_serial_buf);
+		this->_speaker->serial_sending();
 	}
+	_serial_buf = "";
 }
 /* ========================================================================= */
