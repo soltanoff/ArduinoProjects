@@ -2,25 +2,28 @@
 
 
 CCommand::CCommand(const std::string signature, const func callback, const bool have_args):
-        signature(signature), callback(callback), have_args(have_args)
-{};
+        signature(signature), _callback(callback), _have_args(have_args)
+{ };
 
-void* CCommand::call(void* args) {
+std::string CCommand::call(const std::string args) {
     try {
-        access.try_lock();
-        void* result = have_args ? callback(args): callback(nullptr);
-        access.unlock();
+        _access.try_lock();
+        std::string result = _have_args ? _callback(args): _callback("");
+        _access.unlock();
 
         return result;
     }
     catch(const std::exception& ex) {
-        access.unlock();
-        std::cout << "[ERROR] Command \"" << signature << "\" failed: " << ex.what();
-        return (void*) -1;
+        _access.unlock();
+
+        std::string error = "[ERROR] Command \"" + signature + "\" failed: " + ex.what();
+        std::cout << error;
+        return error;
     }
     catch(...) {
-        access.unlock();
-        std::cout << "[ERROR] Command \"" << signature << "\" have fatal error.";
-        return (void*) -1;
+        _access.unlock();
+        std::string error = "[ERROR] Command \"" + signature + "\" have fatal error.";
+        std::cout << error;
+        return error;
     }
 };
