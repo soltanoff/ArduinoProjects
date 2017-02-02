@@ -14,15 +14,21 @@ const long DEFAULT_SERIAL_PORT = 9600;
 class SoftwareGSM
 {
 private:
-	short _rx_pin;
-	short _tx_pin;
-	long _serial_port;
-	SoftwareSerial *_gsm_serial;
+	// short _rx_pin;
+	// short _tx_pin;
+	// long _serial_port;
+	
 	SoftwareSpeaker *_speaker;
 	String _serial_buf;
 
 	bool _is_server_connect;
+	bool wait_ok_status(const char* command);
+	bool wait_answer(const char* command);
+	void prepare_command();
+	void prepare_answer(const char* command);
+	// void read_serial(String &value, SoftwareSerial &serial);
 public:
+	SoftwareSerial *_gsm_serial;
 	SoftwareGSM(
 		short rx = DEFAULT_RX,
 		short tx = DEFAULT_TX,
@@ -33,7 +39,7 @@ public:
 	void send_sms(const char *phone_number, const char *text);
 	void call_number(const char *phone_number);
 	
-	void connect_to_server(String ip, String port);
+	void connect_to_server(const char* ip, const char* port);
 	void disconnect_server();
 
 	void execute();
