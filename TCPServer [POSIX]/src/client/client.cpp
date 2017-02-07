@@ -1,5 +1,5 @@
-#include <cstring>
 #include "client.h"
+#include <cstring>
 
 
 CClient::CClient() {
@@ -41,7 +41,7 @@ void CClient::send_command() {
 }
 
 bool CClient::get_answer(int& bytesRecv, char* answer) {
-    bytesRecv = recv(m_socket, answer, (size_t) ServerCfg::BUFF_SIZE, 0);
+    bytesRecv = (int)recv(m_socket, answer, (size_t) ServerCfg::BUFF_SIZE, 0);
     if (bytesRecv == 0) {
         std::cout << "[CLIENT] Connection closed.\n";
         throw 0;

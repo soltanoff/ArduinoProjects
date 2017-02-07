@@ -6,7 +6,7 @@
 /* ================================================================================================================== */
 
 
-class CClient: public CBaseInteractionClass, public CBaseConnectionClass {
+class CClient: public IBaseInteraction, public IBaseConnection {
 public:
     CClient();
     ~CClient();
