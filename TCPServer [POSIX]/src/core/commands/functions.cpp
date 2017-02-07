@@ -1,11 +1,12 @@
 #include "scheduler.h"
+#include "functions.h"
 
 
 // ====================================================================================================================
 // SERVICE FUNCTIONS
 // function: get database connection
-CDBConnection* get_db() {
-    return new CDBConnection(
+std::unique_ptr<CDBConnection> Functions::get_db() {
+    return std::make_unique<CDBConnection>(
             ServerCfg::DB_ADDRESS,
             ServerCfg::DATABASE,
             ServerCfg::DB_USER,
@@ -14,93 +15,111 @@ CDBConnection* get_db() {
 }
 // ====================================================================================================================
 // COMMAND FUNCTIONS
+// cmd: None
+void Functions::unknown(DataVector arg, FuncArg result_cb) {
+    std::string str = {" > unknown command"};
+    result_cb(DataVector(str.begin(), str.end() + 1));
+}
+
 // cmd: help
-std::string help(const std::string arg) {
-    return std::string(
-            "\nAvailable commands:\n"
-                    "> test [{arg}] \t\t - function of the test. Return message.\n"
-                    "> store {arg} \t\t - method of storing in DB send {args}.\n"
-                    "> get_all \t\t\t - get all stored messages.\n"
-                    "> get_read \t\t\t - get all read messages.\n"
-                    "> get_unread \t\t - get all unread messages.\n"
-                    "> set_read_all \t\t - set all messages as read.\n"
-                    "> clear_db \t\t\t - set all messages as deleted.\n"
-    );
+void Functions::help(DataVector arg, FuncArg result_cb) {
+    std::string str = {"\n\rAvailable commands:\n\r"
+                        "> test [{arg}] \t\t - function of the test. Return message.\n\r"
+                        "> store {arg} \t\t - method of storing in DB send {args}.\n\r"
+                        "> get_all \t\t\t - get all stored messages.\n\r"
+                        "> get_read \t\t\t - get all read messages.\n\r"
+                        "> get_unread \t\t - get all unread messages.\n\r"
+                        "> set_read_all \t\t - set all messages as read.\n\r"
+                        "> clear_db \t\t\t - set all messages as deleted.\n\r"};
+    result_cb(std::vector<std::uint8_t>(str.begin(), str.end() + 1));
 }
 
 // cmd: test
-std::string test(const std::string arg) {
-    if (arg.empty())
+void Functions::test(DataVector arg, FuncArg result_cb) {
+    std::string str_arg(arg.begin(), arg.end());
+
+    if (str_arg.empty())
         std::cout << "foo() executed. arg = nullptr :)" << std::endl;
     else
-        std::cout << "foo() executed. arg = " << arg << std::endl;
+        std::cout << "foo() executed. arg = " << str_arg << std::endl;
 
-    return std::string(" > this is a test method");
+    std::string str = {" > this is a test method"};
+    result_cb(DataVector(str.begin(), str.end() + 1));
 }
 
 // cmd: store <args>
-std::string store(const std::string arg) {
-    if (!arg.empty()) {
-        CDBConnection *db = get_db();
-        std::string query = "INSERT INTO Logger (message) VALUES (\'" + arg + "\')";
+void Functions::store(DataVector arg, FuncArg result_cb) {
+    std::string str_arg(arg.begin(), arg.end());
+
+    std::string str;
+    if (!str_arg.empty()) {
+        auto db = get_db();
+        std::string query = "INSERT INTO Logger (message) VALUES (\'" + str_arg + "\')";
         db->query(query.c_str());
-        delete db;
-        return std::string(" > stored");
+        str = " > stored";
     }
-    return std::string("not enough arguments.");
+    else
+        str = "not enough arguments.";
+
+    result_cb(DataVector(str.begin(), str.end() + 1));
 }
 
 // cmd: get_all
-std::string get_all(const std::string arg) {
+void Functions::get_all(DataVector arg, FuncArg result_cb) {
+    std::string str_arg(arg.begin(), arg.end());
+    std::string result;
+
     if (arg.empty()) {
-        CDBConnection *db = get_db();
+        auto db = get_db();
         std::string query = ""
                 "SELECT l.id, l.message "
                 "FROM Logger l INNER JOIN State s ON l.id = s.id_logger ";
-
         QueryResultList records = db->get_record_list(query.c_str());
 
-        std::string result;
         for (auto it = records.begin(); it != records.end(); it++) {
             for (auto col = (*it).begin(); col != (*it).end(); col++)
                 result += (*col) + " ";
             result += "\n";
         }
-
-        delete db;
-        return result;
     }
-    return std::string(" > getall execute without arguments");
+    else
+        result = " > getall execute without arguments";
+
+    result_cb(DataVector(result.begin(), result.end() + 1));
 }
 
 // cmd: get_read
-std::string get_read(const std::string arg) {
+void Functions::get_read(DataVector arg, FuncArg result_cb) {
+    std::string str_arg(arg.begin(), arg.end());
+    std::string result;
+
     if (arg.empty()) {
-        CDBConnection *db = get_db();
+        auto db = get_db();
         std::string query = ""
                 "SELECT l.id, l.message "
                 "FROM Logger l INNER JOIN State s ON l.id = s.id_logger AND s.deleted = 0 "
                 "WHERE s.is_read = 1";
-
         QueryResultList records = db->get_record_list(query.c_str());
 
-        std::string result;
         for (auto it = records.begin(); it != records.end(); it++) {
             for (auto col = (*it).begin(); col != (*it).end(); col++)
                 result += (*col) + " ";
             result += "\n";
         }
-
-        delete db;
-        return result;
     }
-    return std::string(" > get_read execute without arguments");
+    else
+        result = " > get_read execute without arguments";
+
+    result_cb(DataVector(result.begin(), result.end() + 1));
 }
 
 // cmd: get_unread
-std::string get_unread(const std::string arg) {
+void Functions::get_unread(DataVector arg, FuncArg result_cb) {
+    std::string str_arg(arg.begin(), arg.end());
+    std::string result;
+
     if (arg.empty()) {
-        CDBConnection *db = get_db();
+        auto db = get_db();
         std::string query = ""
                 "SELECT l.id, l.message "
                 "FROM Logger l INNER JOIN State s ON l.id = s.id_logger AND s.deleted = 0 "
@@ -108,47 +127,58 @@ std::string get_unread(const std::string arg) {
 
         QueryResultList records = db->get_record_list(query.c_str());
 
-        std::string result;
         for (auto it = records.begin(); it != records.end(); it++) {
             for (auto col = (*it).begin(); col != (*it).end(); col++)
                 result += (*col) + " ";
             result += "\n";
         }
-
-        query = ""
-                "UPDATE "
-                "Logger l INNER JOIN State s ON l.id = s.id_logger AND s.deleted = 0 "
-                "SET s.is_read = 1, modify_date = CURRENT_TIMESTAMP "
-                "WHERE s.is_read = 0 ";
-
+        query = "UPDATE State SET is_read = 1, modify_date = CURRENT_TIMESTAMP";
         db->query(query.c_str());
-
-        delete db;
-        return result;
     }
-    return std::string(" > get_read execute without arguments");
+    else
+        result = " > get_unread execute without arguments";
+
+    result_cb(DataVector(result.begin(), result.end() + 1));
 }
 
 // cmd: set_read_all
-std::string set_read_all(const std::string arg) {
+void Functions::set_read_all(DataVector arg, FuncArg result_cb) {
+    std::string str_arg(arg.begin(), arg.end());
+    std::string result;
+
     if (arg.empty()) {
-        CDBConnection *db = get_db();
+        auto db = get_db();
         std::string query = "UPDATE State SET is_read = 1, modify_date = CURRENT_TIMESTAMP";
         db->query(query.c_str());
-        delete db;
-        return std::string(" > all data is read");
+        result = " > all data is read";
     }
-    return std::string(" > clear_db execute without arguments");
+    else
+        result = " > clear_db execute without arguments";
+
+    result_cb(DataVector(result.begin(), result.end() + 1));
 }
 
 // cmd: clear_db
-std::string clear_db(const std::string arg) {
+void Functions::clear_db(DataVector arg, FuncArg result_cb) {
+    std::string str_arg(arg.begin(), arg.end());
+    std::string result;
+
     if (arg.empty()) {
-        CDBConnection *db = get_db();
-        std::string query = "UPDATE State SET deleted = 1, modify_date = CURRENT_TIMESTAMP";
+        auto db = get_db();
+        std::string query = "UPDATE State SET deleted = 1"; // , modify_date = CURRENT_TIMESTAMP";
         db->query(query.c_str());
-        delete db;
-        return std::string(" > database cleared");
+        result = " > database cleared";
     }
-    return std::string(" > clear_db execute without arguments");
+    else
+        result = " > clear_db execute without arguments";
+
+    result_cb(DataVector(result.begin(), result.end() + 1));
+}
+
+// cmd: shutdown
+void Functions::shutdown(DataVector arg, FuncArg result_cb) {
+    std::cout << "[SERVER] Shutdown... " << std::endl;
+
+    std::string str = {" > server is shutdown"};
+    result_cb(DataVector(str.begin(), str.end() + 1));
 }
