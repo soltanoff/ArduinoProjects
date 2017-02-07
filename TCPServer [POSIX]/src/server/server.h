@@ -6,7 +6,7 @@
 /* ================================================================================================================== */
 
 
-class CServer: public CBaseConnectionClass {
+class CServer: public IBaseConnection {
 public:
     CServer();
     ~CServer();
@@ -16,6 +16,11 @@ public:
     void start();
     void close();
 private:
+    std::vector<std::shared_ptr<std::thread>> _client_threads;
+    std::vector<SOCKET> _client_sockets;
+    std::vector<char*> _client_ips;
+    // std::mutex _main_mutex;
+
     void accept_socket(SOCKET& AcceptSocket, sockaddr_in& ClientInfo);
     void connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int count);
 };

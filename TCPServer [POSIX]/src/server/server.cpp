@@ -1,14 +1,16 @@
-#include <cstring>
 #include "server.h"
 
 
-void thread_routine(int client_number, SOCKET client_socket) {
-    ClientInteraction client(client_number, client_socket);
+void thread_routine(int client_number, SOCKET client_socket) {  // , std::mutex& main_mutex) {
+    ClientInteraction client(client_number, client_socket); // , main_mutex);
 
     while (true) {
         try {
             int code = client.exec();
-            if (code == -1) return;
+            if (code == -1) {
+                client.close();
+                return;
+            }
         }
         catch (int) {
             client.close();
@@ -30,9 +32,16 @@ CServer::CServer() {
     if (m_socket < 0)
     {
         std::cout << "[ERROR: SOCKET] Error at socket()" << std::endl;
-        system("pause");
+        /*
+        #if defined(_WIN32) || defined(_WIN64)
+                system("pause");
+        #else
+                system("sleep 1000");
+        #endif
+        */
         return;
     }
+
     std::cout << "[STATUS] Server ready.\n";
 }
 
@@ -53,11 +62,11 @@ void CServer::connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int co
     send(AcceptSocket, "ACCEPT", strlen("ACCEPT"), 0);
 
     // std::thread* thread = new std::thread(thread_routine, count, AcceptSocket);
-    std::shared_ptr<std::thread> thread(new std::thread(thread_routine, count, AcceptSocket));
+    std::shared_ptr<std::thread> thread(new std::thread(thread_routine, count, AcceptSocket));  // , _main_mutex));
 
-    CLIENT_IPS.push_back(inet_ntoa(ClientInfo.sin_addr));
-    CLIENT_SOCKETS.push_back(AcceptSocket);
-    CLIENT_THREADS.push_back(thread);
+    _client_ips.push_back(inet_ntoa(ClientInfo.sin_addr));
+    _client_sockets.push_back(AcceptSocket);
+    _client_threads.push_back(thread);
 }
 
 int CServer::try_open_socket() {
@@ -70,14 +79,14 @@ int CServer::try_open_socket() {
     if (bind(m_socket, (sockaddr*)& service, sizeof(service)) == SOCKET_ERROR)
     {
         std::cout << "[ERROR: sockaddr] bind() failed.\n";
-        system("pause");
+        // system("pause");
         return -1;
     }
     /* ========================================================================================================== */
     if (listen(m_socket, ServerCfg::BACKLOG) == SOCKET_ERROR)
     {
         std::cout << "[ERROR: LISTEN] Error listening on socket.\n";
-        system("pause");
+        // system("pause");
         return -1;
     }
     return 0;
