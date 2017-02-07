@@ -15,19 +15,19 @@ class CDBConnection {
 public:
     CDBConnection() {};
     CDBConnection(
-            const std::string server,
-            const std::string database,
-            const std::string user,
-            const std::string password,
+            const std::string& server,
+            const std::string& database,
+            const std::string& user,
+            const std::string& password,
             const unsigned int port = 0
     );
     ~CDBConnection() { close(); };
 
     bool connect(
-            const std::string server,
-            const std::string database,
-            const std::string user,
-            const std::string password,
+            const std::string& server,
+            const std::string& database,
+            const std::string& user,
+            const std::string& password,
             const unsigned int port = 0
     );
     void reconnnect();

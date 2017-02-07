@@ -2,10 +2,10 @@
 
 
 CDBConnection::CDBConnection(
-        const std::string server,
-        const std::string database,
-        const std::string user,
-        const std::string password,
+        const std::string& server,
+        const std::string& database,
+        const std::string& user,
+        const std::string& password,
         const unsigned int port
 )
 {
@@ -13,10 +13,10 @@ CDBConnection::CDBConnection(
 };
 
 bool CDBConnection::connect(
-        const std::string server,
-        const std::string database,
-        const std::string user,
-        const std::string password,
+        const std::string& server,
+        const std::string& database,
+        const std::string& user,
+        const std::string& password,
         const unsigned int port
 ) {
     _connection = mysql_init(NULL);
