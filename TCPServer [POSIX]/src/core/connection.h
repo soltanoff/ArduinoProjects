@@ -3,12 +3,12 @@
 /* ================================================================================================================== */
 #include "../config/config.h"
 /* ================================================================================================================== */
-class CBaseConnectionClass {
+class IBaseConnection {
 public:
     virtual int try_open_socket() = 0;
     virtual void start() = 0;
 
-    ~CBaseConnectionClass() = default;
+    ~IBaseConnection() = default;
 protected:
     SOCKET m_socket; // создаем сокет
     sockaddr_in service;
