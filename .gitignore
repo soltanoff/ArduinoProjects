@@ -4,3 +4,8 @@ board.buildinfo
 *.d
 *.hex
 *.elf
+.pioenvs
+.clang_complete
+.gcc-flags.json
+.piolibdeps
+ProjectGSM/.travis.yml
