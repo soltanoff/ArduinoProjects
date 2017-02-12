@@ -75,7 +75,7 @@ std::string command_scheduler(const std::string command) {
 }
 */
 
-bool Scheduler::schedule(const std::vector<uint8_t> &data) {
+bool Scheduler::schedule(const std::vector<uint8_t> &data, SOCKET s) {
     static std::regex re("(\\w+)\\s*(.*)?\\s*");
     /*
     struct S
@@ -105,7 +105,7 @@ bool Scheduler::schedule(const std::vector<uint8_t> &data) {
         if (std::regex_search(command, result, re)) {
             std::string cmd(result.str(1));
             std::string args(result.str(2));
-            // ==========================================
+            // ============================ ==============
             // Command selector
             COMMANDS cmd_code;
             if (cmd == "help")
@@ -133,7 +133,7 @@ bool Scheduler::schedule(const std::vector<uint8_t> &data) {
                 for (auto func_pair: callbacks->second)
                 {
                     auto d = std::vector<std::uint8_t>(args.begin(), args.end());
-                    func_pair.first(std::move(d), func_pair.second);
+                    func_pair.first(std::move(d), func_pair.second, s);
                 }
                 return true;
             }
@@ -148,7 +148,9 @@ bool Scheduler::schedule(const std::vector<uint8_t> &data) {
 }
 
 void Scheduler::bind(COMMANDS cmd, Func&& callback, ResultCallback&& result_cb) {
-    _callbacks_map[(std::uint32_t)cmd].emplace_back(std::make_pair(callback, result_cb));
+    auto callbacks = _callbacks_map.find((std::uint32_t) cmd);
+    if(callbacks == _callbacks_map.end())
+        _callbacks_map[(std::uint32_t)cmd].emplace_back(std::make_pair(callback, result_cb));
 }
 
 std::map<std::uint32_t, std::list<std::pair<Scheduler::Func, Scheduler::ResultCallback>> > Scheduler::_callbacks_map = {};
