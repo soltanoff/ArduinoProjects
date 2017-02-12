@@ -27,10 +27,11 @@ enum class COMMANDS : std::uint32_t {
 
 class Scheduler {
 public:
-    typedef std::function<void(std::vector<std::uint8_t>, std::function< void(std::vector<std::uint8_t>) >)> Func;
-    typedef std::function<void(std::vector<std::uint8_t>)> ResultCallback;
+    typedef std::function<void(std::vector<std::uint8_t>, SOCKET)> ResultCallback;
+    typedef std::function<void(std::vector<std::uint8_t>, ResultCallback, SOCKET)> Func;
 
-    static bool schedule(const std::vector<uint8_t> &data);
+
+    static bool schedule(const std::vector<uint8_t> &data, SOCKET s);
     static void bind(COMMANDS cmd, Func&& callback, ResultCallback&& result_cb);
 private:
     static std::map< std::uint32_t, std::list< std::pair<Func, ResultCallback> > > _callbacks_map;
