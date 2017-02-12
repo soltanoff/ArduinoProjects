@@ -5,8 +5,9 @@ ClientInteraction::ClientInteraction(int client_number, SOCKET client_socket) : 
         _client_number(client_number), _client_socket(client_socket) {
     // _main_mutex = &server_mutex;
 
-    static auto result_callback = [&](std::vector<std::uint8_t> data) {
-        send_message((const char*)data.data());
+    auto result_callback = [&](std::vector<std::uint8_t> data, SOCKET s) {
+        std::cout << "[SERVER] SEND ANSWER" << std::endl;
+        send_message((const char*)data.data(), s);
     };
     static auto shutdown_callback = [&](std::vector<std::uint8_t> data) {
         send_message((const char*)data.data());
@@ -22,7 +23,7 @@ ClientInteraction::ClientInteraction(int client_number, SOCKET client_socket) : 
     Scheduler::bind(COMMANDS::get_unread, bind(&Functions::get_unread, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::set_read_all, bind(&Functions::set_read_all, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::clear_db, bind(&Functions::clear_db, _functions), std::ref(result_callback));
-    Scheduler::bind(COMMANDS::shutdown, bind(&Functions::shutdown, _functions), std::ref(shutdown_callback));
+    //Scheduler::bind(COMMANDS::shutdown, bind(&Functions::shutdown, _functions), std::ref(shutdown_callback));
 }
 
 bool ClientInteraction::get_answer(std::int32_t& bytesRecv, char* answer) {
@@ -52,6 +53,15 @@ bool ClientInteraction::send_message(const char* msg) {
     return true;
 }
 
+bool ClientInteraction::send_message(const char* msg, SOCKET s) {
+    std::lock_guard<decltype(MAIN_MUTEX)> scoped_lock(MAIN_MUTEX);
+    if (!strlen(msg))
+        send(s, " > NONE", 7, 0);
+    else
+        send(s, msg, strlen(msg), 0);
+    return true;
+}
+
 int ClientInteraction::exec() {
     std::int32_t bytesRecv = SOCKET_ERROR;
     char recvbuf[ServerCfg::BUFF_SIZE] = "";
@@ -68,7 +78,7 @@ int ClientInteraction::exec() {
                 << "] Bytes recv: " << bytesRecv << " | [MSG: " << recvbuf << "]\n";
     }
 
-    if (!Scheduler::schedule(std::vector<std::uint8_t>(recvbuf, recvbuf + bytesRecv))) {
+    if (!Scheduler::schedule(std::vector<std::uint8_t>(recvbuf, recvbuf + bytesRecv), _client_socket)) {
         std::cout << "[SERVER] Client command is not execute. \n";
         send_message(" > command is not execute (maybe unknown)");
     }
