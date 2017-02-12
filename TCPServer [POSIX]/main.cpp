@@ -67,6 +67,10 @@ class A
 #pragma pack(1)
 */
 
+// TODO: 1) disable client
+// TODO: 2) client disconnect
+// TODO: 3) client ping
+// TODO: 4) detect disconnected clients
 
 int main(int argc, char* argv[]) {
     /*
