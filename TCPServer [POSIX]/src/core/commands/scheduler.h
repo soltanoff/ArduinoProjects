@@ -17,12 +17,9 @@ enum class COMMANDS : std::uint32_t {
     get_read,
     get_unread,
     set_read_all,
-    clear_db,
-    shutdown
+    clear_db
 };
 /* ================================================================================================================== */
-// extern std::vector<std::shared_ptr<CCommand>> COMMAND_LIST;
-// std::string command_scheduler(const std::string command);
 
 
 class Scheduler {
@@ -30,8 +27,8 @@ public:
     typedef std::function<void(std::vector<std::uint8_t>, SOCKET)> ResultCallback;
     typedef std::function<void(std::vector<std::uint8_t>, ResultCallback, SOCKET)> Func;
 
-
-    static bool schedule(const std::vector<uint8_t> &data, SOCKET s);
+    static bool execute_command(const std::uint32_t& cmd_code, const std::string& args, SOCKET& s);
+    static int schedule(const std::vector<uint8_t> &data, SOCKET s, const bool& is_gsm);
     static void bind(COMMANDS cmd, Func&& callback, ResultCallback&& result_cb);
 private:
     static std::map< std::uint32_t, std::list< std::pair<Func, ResultCallback> > > _callbacks_map;
