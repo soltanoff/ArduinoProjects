@@ -1,13 +1,14 @@
 #include "server.h"
 
 
-void thread_routine(int client_number, SOCKET client_socket) {  // , std::mutex& main_mutex) {
-    ClientInteraction client(client_number, client_socket); // , main_mutex);
+void thread_routine(std::uint32_t client_number, SOCKET client_socket, bool is_gsm) {
+    ClientInteraction client(client_number, client_socket, is_gsm);
 
     while (true) {
         try {
             int code = client.exec();
             if (code == -1) {
+                std::cout << "[SERVER] Client #" << client_number + 1 << " disconnected.\n";
                 client.close();
                 return;
             }
@@ -32,13 +33,6 @@ CServer::CServer() {
     if (m_socket < 0)
     {
         std::cout << "[ERROR: SOCKET] Error at socket()" << std::endl;
-        /*
-        #if defined(_WIN32) || defined(_WIN64)
-                system("pause");
-        #else
-                system("sleep 1000");
-        #endif
-        */
         return;
     }
 
@@ -57,12 +51,48 @@ void CServer::accept_socket(SOCKET& AcceptSocket, sockaddr_in& ClientInfo) {
         AcceptSocket = accept(m_socket, (sockaddr* )& ClientInfo, (socklen_t *) &adrlen);
 }
 
-void CServer::connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int count) {
-    std::cout << "[SERVER] Client #" << count + 1 << " connected. " << inet_ntoa(ClientInfo.sin_addr) << std::endl;
+bool CServer::is_gsm_client(const SOCKET& AcceptSocket, const int& client_number) {
+    std::int32_t bytesRecv;
+    char recvbuf[ServerCfg::BUFF_SIZE] = "";
+
     send(AcceptSocket, "ACCEPT", strlen("ACCEPT"), 0);
+    bytesRecv = (std::int32_t)recv(AcceptSocket, recvbuf, ServerCfg::BUFF_SIZE, 0);
+
+    if (bytesRecv == 0) {
+        std::cout << "[SERVER] Client #" << client_number + 1 << " disconnected.\n";
+        throw 0;
+    }
+    if (bytesRecv < 0) {
+        std::cout << "[SERVER] Connection lost with client #" << client_number + 1 << std::endl;
+        throw 0;
+    }
+
+    try {
+        std::uint32_t id = (std::uint32_t) std::stoi(recvbuf);
+        switch (id){
+            case (std::uint32_t) CLIENT_TYPES::gsm:
+                return true;
+            case (std::uint32_t) CLIENT_TYPES::simple:
+                return false;
+            default:
+                return false;
+        }
+    }
+    catch (...) {
+        return false;
+    }
+}
+
+void CServer::connect_user(const SOCKET& AcceptSocket, const sockaddr_in& ClientInfo, const std::uint32_t& count) {
+    std::cout << "[SERVER] Client #"
+              << count + 1
+              << " connected. "
+              << inet_ntoa(ClientInfo.sin_addr) << std::endl;
 
     // std::thread* thread = new std::thread(thread_routine, count, AcceptSocket);
-    std::shared_ptr<std::thread> thread(new std::thread(thread_routine, count, AcceptSocket));  // , _main_mutex));
+    std::shared_ptr<std::thread> thread(
+            new std::thread(thread_routine, count, AcceptSocket, is_gsm_client(AcceptSocket, count))
+    );
 
     _client_ips.push_back(inet_ntoa(ClientInfo.sin_addr));
     _client_sockets.push_back(AcceptSocket);
@@ -79,21 +109,19 @@ int CServer::try_open_socket() {
     if (bind(m_socket, (sockaddr*)& service, sizeof(service)) == SOCKET_ERROR)
     {
         std::cout << "[ERROR: sockaddr] bind() failed.\n";
-        // system("pause");
         return -1;
     }
     /* ========================================================================================================== */
     if (listen(m_socket, ServerCfg::BACKLOG) == SOCKET_ERROR)
     {
         std::cout << "[ERROR: LISTEN] Error listening on socket.\n";
-        // system("pause");
         return -1;
     }
     return 0;
 }
 
 int CServer::exec() {
-    int count = 0;
+    std::uint32_t count = 0;
 
     while (true)
     {
