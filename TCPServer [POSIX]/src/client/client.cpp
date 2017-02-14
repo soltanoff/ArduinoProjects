@@ -101,6 +101,8 @@ int CClient::try_open_socket() {
         std::cout << "[ERROR: sockaddr] Connection failed.\n";
         return -1;
     }
+
+    send_message("1");  // send client type
     return 0;
 }
 
