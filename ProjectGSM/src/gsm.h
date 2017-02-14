@@ -32,7 +32,7 @@ public:
 		const long& serial_port = DEFAULT_SERIAL_PORT
 	);
 	void send(String &command);
-
+	void send_answer(String &answer);
 	void send_sms(const char* phone_number, const char* text);
 	void call_number(const char* phone_number);
 

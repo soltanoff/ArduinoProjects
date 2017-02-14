@@ -3,27 +3,25 @@
 /* ========================================================================= */
 SoftwareGSM::SoftwareGSM(const short& rx, const short& tx, const long& serial_port)
 {
-	this->_is_server_connect = false;
-	this->_gsm_serial = new SoftwareSerial(rx, tx);
-	this->_gsm_serial->begin(serial_port);  // Скорость порта для связи Arduino с GSM модулем
-	delay(100);
-
-	this->_gsm_serial->println("AT+IPR=" + String(serial_port));  // устанавливаем скорость шилда
-	delay(100);
-
 	this->_speaker = new SoftwareSpeaker();
 	this->_speaker->module_initional();
 	delay(1000);
 
+	this->_is_server_connect = false;
+	this->_gsm_serial = new SoftwareSerial(rx, tx);
+
+	// Скорость порта для связи Arduino с GSM модулем
+	this->_gsm_serial->begin(serial_port);
+	delay(100);
+	this->_gsm_serial->println("AT+IPR=" + String(serial_port));
+	delay(100);
 	this->_gsm_serial->println("AT+CMEE=2");
 	delay(200);
-
 	for (short i = 0; i < 5; i++)
 	{
 		this->_gsm_serial->println("AT");
 		delay(800);
 	}
-
 	this->_gsm_serial->println("AT+CSCS=\"GSM\"");
 	delay(800);
 	this->_gsm_serial->println("AT+CMGF=1");
@@ -54,7 +52,6 @@ void SoftwareGSM::call_number(const char* phone_number)
 {
 	this->_gsm_serial->print("ATD");
 	this->_gsm_serial->println(phone_number);
-	// Serial.println(";");
 	delay(10000);
 	this->_gsm_serial->println("ATH");
 }
@@ -180,6 +177,13 @@ void SoftwareGSM::disconnect_server()
 	this->_is_server_connect = false;
 }
 /* ========================================================================= */
+void SoftwareGSM::send_answer(String &answer)
+{
+	this->_gsm_serial->println(
+		"AT+CIPSEND=" + String(answer.length()) + ", \"" + answer + "\""
+	);
+}
+/* ========================================================================= */
 void SoftwareGSM::send(String &command)
 {
 	if (command.equals("dsc") && this->_is_server_connect) {
@@ -188,15 +192,9 @@ void SoftwareGSM::send(String &command)
 	if (command.equals("cnct")) {
 		this->connect_to_server("31.207.67.22", "8082"); return;
 	}
-	if (command.equals("qqq")) {
-		_serial_buf = "store ";
-		for (int i = 0; i < 120; ++i)
-			_serial_buf += "Q";
-		this->_gsm_serial->println("AT+CIPSEND=" + String(_serial_buf.length()) + ", \"" + _serial_buf + "\"");
-	}
 
 	if (this->_is_server_connect) {
-		this->_gsm_serial->println("AT+CIPSEND=" + String(command.length()) + ", \"" + command + "\"");
+		this->send_answer(command);
 	}
 	else {
 		this->_gsm_serial->println(command);
