@@ -4,7 +4,10 @@
 #include "../core/clientinteraction.h"
 #include "../core/connection.h"
 /* ================================================================================================================== */
-
+enum class CLIENT_TYPES : std::uint32_t {
+    simple=1,
+    gsm
+};
 
 class CServer: public IBaseConnection {
 public:
@@ -19,10 +22,10 @@ private:
     std::vector<std::shared_ptr<std::thread>> _client_threads;
     std::vector<SOCKET> _client_sockets;
     std::vector<char*> _client_ips;
-    // std::mutex _main_mutex;
 
+    bool is_gsm_client(const SOCKET& AcceptSocket, const int& client_number);
     void accept_socket(SOCKET& AcceptSocket, sockaddr_in& ClientInfo);
-    void connect_user(SOCKET& AcceptSocket, sockaddr_in& ClientInfo, int count);
+    void connect_user(const SOCKET& AcceptSocket, const sockaddr_in& ClientInfo, const std::uint32_t& count);
 };
 /* ================================================================================================================== */
 #endif /* SERVER_H */
