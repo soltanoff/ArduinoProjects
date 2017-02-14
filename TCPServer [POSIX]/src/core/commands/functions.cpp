@@ -165,7 +165,7 @@ void Functions::clear_db(DataVector arg, FuncArg result_cb, SOCKET s) {
 
     if (arg.empty()) {
         auto db = get_db();
-        std::string query = "UPDATE State SET deleted = 1"; // , modify_date = CURRENT_TIMESTAMP";
+        std::string query = "UPDATE State SET deleted = 1, modify_date = CURRENT_TIMESTAMP";
         db->query(query.c_str());
         result = " > database cleared";
     }
@@ -173,12 +173,4 @@ void Functions::clear_db(DataVector arg, FuncArg result_cb, SOCKET s) {
         result = " > clear_db execute without arguments";
 
     result_cb(DataVector(result.begin(), result.end() + 1), s);
-}
-
-// cmd: shutdown
-void Functions::shutdown(DataVector arg, FuncArg result_cb, SOCKET s) {
-    std::cout << "[SERVER] Shutdown... " << std::endl;
-
-    std::string str = {" > server is shutdown"};
-    result_cb(DataVector(str.begin(), str.end() + 1), s);
 }

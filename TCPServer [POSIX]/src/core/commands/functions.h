@@ -34,8 +34,6 @@ public:
     void set_read_all(DataVector arg, FuncArg result_cb, SOCKET s);
     // cmd: clear_db
     void clear_db(DataVector arg, FuncArg result_cb, SOCKET s);
-    // cmd: shutdown
-    void shutdown(DataVector arg, FuncArg result_cb, SOCKET s);
 private:
     // ====================================================================================================================
     // SERVICE FUNCTIONS
