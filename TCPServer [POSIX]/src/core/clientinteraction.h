@@ -10,16 +10,16 @@
 
 class ClientInteraction: public IBaseInteraction {
 public:
-    ClientInteraction(int client_number, SOCKET client_socket);  // , std::mutex& server_mutex);
+    ClientInteraction(std::uint32_t client_number, SOCKET client_socket, bool is_gsm);  // , std::mutex& server_mutex);
     ~ClientInteraction() { close(); }
 
     int exec();
     void close();
 private:
-    int _client_number;
+    std::uint32_t _client_number;
     SOCKET _client_socket;
     Functions _functions;
-    // std::mutex* _main_mutex;
+    bool _is_gsm;
 
     bool get_answer(std::int32_t& bytesRecv, char* answer);
     bool send_message(const char* msg);
