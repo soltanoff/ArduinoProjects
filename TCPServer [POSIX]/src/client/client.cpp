@@ -1,5 +1,7 @@
 #include "client.h"
+#include "../core/commands/scheduler.h"
 #include <cstring>
+#include <regex>
 
 
 CClient::CClient() {
@@ -25,6 +27,7 @@ bool CClient::send_message(const char* msg) {
 }
 
 void CClient::send_command() {
+    static std::regex re("(\\w+)\\s*(.*)?\\s*");
     std::string sendbuf;
     std::cout << "[CLIENT] Command: ";
 
@@ -35,9 +38,38 @@ void CClient::send_command() {
     if (sendbuf.compare("exit") == 0) {
         throw 0;
     }
-    int bytesSent = send_message(sendbuf.c_str());
-    if (bytesSent < 0)
-        throw 0;
+
+    std::smatch result;
+    if (std::regex_search(sendbuf, result, re)) {
+        std::vector<std::uint8_t> data;
+        std::string cmd(result.str(1));
+        std::string args = result.str(2);
+        // ==========================================
+        // Command selector
+        COMMANDS cmd_code;
+        if (cmd == "help")
+            cmd_code = COMMANDS::help;
+        else if (cmd == "store")
+            cmd_code = COMMANDS::store;
+        else if (cmd == "get_all")
+            cmd_code = COMMANDS::get_all;
+        else if (cmd == "get_read")
+            cmd_code = COMMANDS::get_read;
+        else if (cmd == "get_unread")
+            cmd_code = COMMANDS::get_unread;
+        else if (cmd == "set_read_all")
+            cmd_code = COMMANDS::set_read_all;
+        else if (cmd == "clear_db")
+            cmd_code = COMMANDS::clear_db;
+        else
+            cmd_code = COMMANDS::unknown;
+
+        sendbuf = (std::uint32_t)cmd_code > 9 ? std::to_string((std::uint32_t)cmd_code) : "0" + std::to_string((std::uint32_t)cmd_code);
+        sendbuf += "%" + args + '\0';
+        int bytesSent = send_message(sendbuf.c_str());
+        if (bytesSent < 0)
+            throw 0;
+    }
 }
 
 bool CClient::get_answer(int& bytesRecv, char* answer) {
