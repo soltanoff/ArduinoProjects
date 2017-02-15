@@ -3,22 +3,39 @@
 #define GSM_H
 /* ========================================================================= */
 #include "Arduino.h"
-#include "speaker.h"
+// #include "speaker.h"
 #include <SoftwareSerial.h>
 /* ========================================================================= */
 #define DEFAULT_RX 10
 #define DEFAULT_TX 11
 #define DEFUALT_POWER_PIN 3
 #define DEFAULT_SERIAL_PORT 9600
+#define OK 1
+#define NOT_OK 2
+#define TIMEOUT 3
 /* ========================================================================= */
 class SoftwareGSM
 {
 private:
-	SoftwareSpeaker *_speaker;
+	// SoftwareSpeaker *_speaker;
 	String _serial_buf;
 
 	bool _is_server_connect;
-	bool wait_ok_status(const char* command);
+
+	String A6_read();
+	byte A6_wait_for(
+		const char* response1,
+		const char* response2,
+		unsigned int& timeOut
+	);
+	byte A6_command(
+		const char* command,
+		const char* response1,
+		const char* response2,
+		unsigned int timeOut,
+		int repetitions
+	);
+
 	bool wait_answer(const char* command);
 	void remove(String& str, char symbol);
 	void prepare_buf();
@@ -33,8 +50,8 @@ public:
 	);
 	void send(String &command);
 	void send_answer(String &answer);
-	void send_sms(const char* phone_number, const char* text);
-	void call_number(const char* phone_number);
+	// void send_sms(const char* phone_number, const char* text);
+	// void call_number(const char* phone_number);
 
 	void connect_to_server(const char* ip, const char* port);
 	void disconnect_server();
