@@ -6,7 +6,7 @@ ClientInteraction::ClientInteraction(std::uint32_t client_number, SOCKET client_
         _client_socket(client_socket),
         _is_gsm(is_gsm) {
 
-    static auto result_callback = [&](std::vector<std::uint8_t> data, SOCKET s) {
+    auto result_callback = [&](std::vector<std::uint8_t> data, SOCKET s) {
         std::cout << "[SERVER] SEND ANSWER" << std::endl;
         send_message((const char*)data.data(), s);
     };
@@ -36,11 +36,12 @@ bool ClientInteraction::get_answer(std::int32_t& bytesRecv, char* answer) {
 
 bool ClientInteraction::send_message(const char* msg) {
     std::lock_guard<decltype(MAIN_MUTEX)> scoped_lock(MAIN_MUTEX);
-
+    /*
     if (!strlen(msg))
         send(_client_socket, " > NONE", 7, 0);
     else
         send(_client_socket, msg, strlen(msg), 0);
+    */
     return true;
 }
 
