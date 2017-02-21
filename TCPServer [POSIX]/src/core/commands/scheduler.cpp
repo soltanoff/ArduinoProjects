@@ -66,4 +66,3 @@ void Scheduler::bind(COMMANDS cmd, Func&& callback, ResultCallback&& result_cb) 
 }
 
 std::map<std::uint32_t, std::list<std::pair<Scheduler::Func, Scheduler::ResultCallback>> > Scheduler::_callbacks_map = {};
- `
