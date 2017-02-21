@@ -1,14 +1,15 @@
 /* ========================================================================= */
 #include "gsm.h"
 /* ========================================================================= */
-SoftwareGSM *gsm;
+SoftwareGSM* gsm;
 /* ========================================================================= */
 void setup()
 {
-	Serial.begin(DEFAULT_SERIAL_PORT);
-	gsm = new SoftwareGSM();
+	Serial.begin(DEFAULT_SERIAL_PORT);  // Скорость порта для связи Arduino с компьютером
 	digitalWrite(DEFUALT_POWER_PIN, HIGH);
-	Serial.println("[GSM] module started.");
+	gsm = new SoftwareGSM();
+	Serial.println(F("[GSM] module started."));
+	viewFreeMemory();
 }
 /* ========================================================================= */
 void loop()
