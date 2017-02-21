@@ -3,6 +3,7 @@
 #define GSM_H
 /* ========================================================================= */
 #include "Arduino.h"
+#include <avr/pgmspace.h>
 // #include "speaker.h"
 #include <SoftwareSerial.h>
 /* ========================================================================= */
@@ -13,16 +14,21 @@
 #define OK 1
 #define NOT_OK 2
 #define TIMEOUT 3
+
+
+#define FF(str) String(str).c_str()
+
+void viewFreeMemory();
 /* ========================================================================= */
 class SoftwareGSM
 {
 private:
 	// SoftwareSpeaker *_speaker;
 	String _serial_buf;
-
+	// String _reply;
 	bool _is_server_connect;
 
-	String A6_read();
+	void A6_read();
 	byte A6_wait_for(
 		const char* response1,
 		const char* response2,
