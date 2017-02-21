@@ -23,14 +23,14 @@ void Functions::unknown(DataVector arg, FuncArg result_cb, SOCKET s) {
 
 // cmd: help
 void Functions::help(DataVector arg, FuncArg result_cb, SOCKET s) {
-    std::string str = {"\n\rAvailable commands:\n\r"
-                        "> test [{arg}] \t\t - function of the test. Return message.\n\r"
-                        "> store {arg} \t\t - method of storing in DB send {args}.\n\r"
-                        "> get_all \t\t\t - get all stored messages.\n\r"
-                        "> get_read \t\t\t - get all read messages.\n\r"
-                        "> get_unread \t\t - get all unread messages.\n\r"
-                        "> set_read_all \t\t - set all messages as read.\n\r"
-                        "> clear_db \t\t\t - set all messages as deleted.\n\r"};
+    std::string str = {"\nAvailable commands:\n"
+                        "> test [{arg}] \t\t - function of the test. Return message.\n"
+                        "> store {arg} \t\t - method of storing in DB send {args}.\n"
+                        "> get_all \t\t\t - get all stored messages.\n"
+                        "> get_read \t\t\t - get all read messages.\n"
+                        "> get_unread \t\t - get all unread messages.\n"
+                        "> set_read_all \t\t - set all messages as read.\n"
+                        "> clear_db \t\t\t - set all messages as deleted.\n"};
     result_cb(std::vector<std::uint8_t>(str.begin(), str.end() + 1), s);
 }
 
