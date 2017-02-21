@@ -1,5 +1,24 @@
 /* ========================================================================= */
 #include "gsm.h"
+
+
+extern int __bss_end;
+extern void *__brkval;
+// Функция, возвращающая количество свободного ОЗУ (RAM)
+int memoryFree()
+{
+   int freeValue;
+   if((int)__brkval == 0)
+      freeValue = ((int)&freeValue) - ((int)&__bss_end);
+   else
+      freeValue = ((int)&freeValue) - ((int)__brkval);
+   return freeValue;
+}
+void viewFreeMemory()
+{
+	Serial.print(F("Free RAM: "));
+	Serial.println(memoryFree());
+}
 /* ========================================================================= */
 SoftwareGSM::SoftwareGSM(const short& rx, const short& tx, const long& serial_port)
 {
@@ -13,15 +32,16 @@ SoftwareGSM::SoftwareGSM(const short& rx, const short& tx, const long& serial_po
 	// Скорость порта для связи Arduino с GSM модулем
 	this->_gsm_serial->begin(serial_port);
 
-	// this->A6_command("AT+IPR=" + String(serial_port)., "OK", "yy", 5000, 2);
-	this->A6_command("AT+CMEE=2", "OK", "yy", 5000, 2);
+	// this->A6_command("AT+IPR=" + String(serial_port)., FF(F("OK")), FF(F("yy")), 5000, 2);
 	for (short i = 0; i < 5; i++) {
-		this->A6_command("AT", "OK", "yy", 100, 2);
+		this->A6_command(FF(F("AT")), FF(F("OK")), FF(F("yy")), 100, 2);
 	}
-	this->A6_command("AT+CSCS=\"GSM\"", "OK", "yy", 5000, 2);
-	this->A6_command("AT+CMGF=1", "OK", "yy", 5000, 2);
-	this->A6_command("AT+SNFS=0", "OK", "yy", 10000, 2);
-	this->A6_command("ATE0", "OK", "yy", 5000, 2);
+	this->A6_command(FF(F("AT+CMEE=2")), FF(F("OK")), FF(F("yy")), 5000, 2);
+	this->A6_command(FF(F("AT+CSCS=\"GSM\"")), FF(F("OK")), FF(F("yy")), 5000, 2);
+	this->A6_command(FF(F("AT+CMGF=1")), FF(F("OK")), FF(F("yy")), 5000, 2);
+	this->A6_command(FF(F("AT+SNFS=0")), FF(F("OK")), FF(F("yy")), 10000, 2);
+	this->A6_command(FF(F("ATE0")), FF(F("OK")), FF(F("yy")), 5000, 2);
+
 }
 /* ========================================================================= */
 /*
@@ -58,16 +78,15 @@ void SoftwareGSM::remove(String& str, char symbol) {
 void SoftwareGSM::prepare_buf()
 {
 	remove(_serial_buf, '\r');
-    _serial_buf.replace("\n\n", " | ");
+    _serial_buf.replace(F("\n\n"), F(" | "));
     remove(_serial_buf, '\n');
 }
 /* ========================================================================= */
-String SoftwareGSM::A6_read() {
-	String reply = "";
+void SoftwareGSM::A6_read() {
+	_serial_buf = "";
 	if (this->_gsm_serial->available())  {
-    	reply = this->_gsm_serial->readString();
+    	_serial_buf = this->_gsm_serial->readString();
   	}
-  	return reply;
 }
 /* ========================================================================= */
 byte SoftwareGSM::A6_wait_for(
@@ -76,18 +95,18 @@ byte SoftwareGSM::A6_wait_for(
 	unsigned int& timeOut
 ) {
   	unsigned long entry = millis();
-  	String reply = this->A6_read();
+  	this->A6_read();
 	byte retVal = 99;
 	do {
-		reply = this->A6_read();
-	    if (reply != "") {
+		this->A6_read();
+	    if (_serial_buf.length()) {
 			Serial.print((millis() - entry));
-		    Serial.print(" ms ");
-	    	Serial.println(reply);
+		    Serial.print(F(" ms "));
+	    	Serial.println(_serial_buf);
 	    }
 	}
 	while (
-		(reply.indexOf(response1) + reply.indexOf(response2) == -2)
+		(_serial_buf.indexOf(response1) + _serial_buf.indexOf(response2) == -2)
 		&& millis() - entry < timeOut
 	);
 
@@ -95,7 +114,7 @@ byte SoftwareGSM::A6_wait_for(
 		retVal = TIMEOUT;
 	}
 	else {
-		if (reply.indexOf(response1) + reply.indexOf(response2) > -2)
+		if (_serial_buf.indexOf(response1) + _serial_buf.indexOf(response2) > -2)
 			retVal = OK;
 		else
 			retVal = NOT_OK;
@@ -116,7 +135,7 @@ byte SoftwareGSM::A6_command(
 	byte count = 0;
 	while (count < repetitions && returnValue != OK) {
 		this->_gsm_serial->println(command);
-		Serial.print("Command: ");
+		Serial.print(F("Command: "));
 		Serial.println(command);
 		if (this->A6_wait_for(response1, response2, timeOut) == OK) {
 			// Serial.println("OK");
@@ -131,7 +150,7 @@ byte SoftwareGSM::A6_command(
 /* ========================================================================= */
 void SoftwareGSM::connect_to_server(const char* ip, const char* port)
 {
-	Serial.println("Connect to server...");
+	Serial.println(F("Connect to server..."));
 
 	// this->wait_ok_status("AT+CGATT?");
 	// delay(2000);
@@ -158,14 +177,15 @@ void SoftwareGSM::connect_to_server(const char* ip, const char* port)
 	// delay(5000);
 	// Начать TCP/UDP подключение
 	// (длительность: 2-3 сек)
-	this->A6_command("AT+CGATT=1", "OK", "yy", 10000, 2);
-	this->A6_command("AT+CGACT=1,1", "OK", "yy", 10000, 2);
-	_serial_buf = "AT+CIPSTART=\"TCP\",\"";
+
+	this->A6_command(FF(F("AT+CGATT=1")), FF(F("OK")), FF(F("yy")), 10000, 2);
+	this->A6_command(FF(F("AT+CGACT=1,1")), FF(F("OK")), FF(F("yy")), 10000, 2);
+	_serial_buf = F("AT+CIPSTART=\"TCP\",\"");
 	_serial_buf += ip;
-	_serial_buf += "\", ";
+	_serial_buf += F("\", ");
 	_serial_buf += port;
-	this->A6_command(_serial_buf.c_str(), "OK", "yy", 10000, 2);
-	this->A6_command("AT+CIPSEND=1, \"2\"", "OK", "yy", 10000, 1);
+	this->A6_command(_serial_buf.c_str(), FF(F("OK")), FF(F("yy")), 10000, 2);
+	this->A6_command(FF(F("AT+CIPSEND=1, \"2\"")), FF(F("OK")), FF(F("yy")), 10000, 1);
 	// wait_ok_status("AT+CIPSEND=4, \"help\"");
 	this->_is_server_connect = true;
 	/*
@@ -195,33 +215,48 @@ void SoftwareGSM::connect_to_server(const char* ip, const char* port)
 /* ========================================================================= */
 void SoftwareGSM::disconnect_server()
 {
-	this->A6_command("AT+CIPSEND=5, \"close\"", "OK", "yy", 10000, 2);
-	this->A6_command("AT+CIPCLOSE", "OK", "yy", 5000, 2);
+	this->A6_command(FF(F("AT+CIPSEND=5, \"close\"")), FF(F("OK")), FF(F("yy")), 10000, 2);
+	this->A6_command(FF(F("AT+CIPCLOSE")), FF(F("OK")), FF(F("yy")), 5000, 2);
 	this->_is_server_connect = false;
 }
 /* ========================================================================= */
 void SoftwareGSM::send_answer(String &answer)
 {
-	String f = "AT+CIPSEND=";
-	f += answer.length();
-	f += ", \"" + answer + "\"";
-	Serial.println(_serial_buf);
-	Serial.println(answer);
-	Serial.println(f);
+	// _reply = "AT+CIPSEND=";
+	// _reply += answer.length();
+	// _reply += ", \"" + answer + "\"";
+	// AT+CIPSEND=2,""  -- 15 bytes
+	//_reply = "";
+	//_reply += answer.length();
+	char* data = new char[15+answer.length()];
+
+	strcpy(data, FF(F("AT+CIPSEND=")));
+	strcat(data, String(answer.length()).c_str());
+	strcat(data, FF(F(",\"")));
+	strcat(data, answer.c_str());
+	strcat(data, FF(F("\"")));
+
+	//Serial.println(_serial_buf);
+	//Serial.println(answer);
+	//Serial.println(_reply);
+	//Serial.println(data);
+	Serial.print(F("Free RAM: "));
+	Serial.println(memoryFree());
+	//answer.
 	this->A6_command(
-		f.c_str(),
-		"OK", "yy", 10000, 1
+		data, // _reply.c_str(),
+		FF(F("OK")), FF(F("yy")), 10000, 1
 	);
+	delete [] data;
 }
 /* ========================================================================= */
 void SoftwareGSM::send(String &command)
 {
-	Serial.println(_serial_buf);
-	if (command.equals("dsc") && this->_is_server_connect) {
+	if (command.equals(F("dsc")) && this->_is_server_connect) {
 		this->disconnect_server(); return;
 	}
-	if (command.equals("cnct")) {
-		this->connect_to_server("31.207.67.22", "8082"); return;
+	if (command.equals(F("cnct"))) {
+		this->connect_to_server(FF(F("31.207.67.22")), FF(F("8082"))); return;
 	}
 
 	if (this->_is_server_connect) {
@@ -234,9 +269,8 @@ void SoftwareGSM::send(String &command)
 /* ========================================================================= */
 void SoftwareGSM::execute()
 {
-	_serial_buf = "";
-	this->_gsm_serial->flush();
 	Serial.flush();
+	this->_gsm_serial->flush();
 	// GSM MODULE SERIAL
 	if (this->_gsm_serial->available())
 	{
@@ -247,39 +281,24 @@ void SoftwareGSM::execute()
 		}
 		this->prepare_buf();
 		Serial.println(_serial_buf);
+		viewFreeMemory();
 		// this->_speaker->serial_answear();
 	}
 	// =======================================================================
-	_serial_buf = "";
-	this->_gsm_serial->flush();
-	Serial.flush();
 	// SOFTWARE SERIAL
 	if (Serial.available())
 	{
+		_serial_buf = "";
 		while (Serial.available())
 		{
-			// _serial_buf += char(Serial.read());
-			_serial_buf += Serial.readString();
-			// delay(1);
+			_serial_buf += char(Serial.read());
+			//_serial_buf += Serial.readString();
+			delay(1);
 		}
-		// delay(10);
-		Serial.println(_serial_buf);
 		this->prepare_buf();
 		Serial.println(_serial_buf);
 		this->send(_serial_buf);
 		// this->_speaker->serial_sending();
 	}
 }
-/*
-// Функция, возвращающая количество свободного ОЗУ (RAM)
-int memoryFree()
-{
-   int freeValue;
-   if((int)__brkval == 0)
-      freeValue = ((int)&freeValue) - ((int)&__bss_end);
-   else
-      freeValue = ((int)&freeValue) - ((int)__brkval);
-   return freeValue;
-}
-*/
 /* ========================================================================= */
