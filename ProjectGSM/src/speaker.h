@@ -12,9 +12,9 @@ private:
 public:
 	SoftwareSpeaker(short pin = 2);
 	void module_initional();
-	void sms_sending();
+	// void sms_sending();
 	void serial_sending();
-	void serial_answear();
+	void serial_answer();
 };
 /* ========================================================================= */
 #endif /* SPEAKER_H */

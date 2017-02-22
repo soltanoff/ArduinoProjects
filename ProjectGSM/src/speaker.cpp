@@ -27,17 +27,19 @@ void SoftwareSpeaker::module_initional()
 	this->speaker_voice(40, 3, 0);
 }
 /* ========================================================================= */
+/*
 void SoftwareSpeaker::sms_sending()
 {
 	this->speaker_voice(40, 1, 40);
 }
+*/
 /* ========================================================================= */
 void SoftwareSpeaker::serial_sending()
 {
 	this->speaker_voice(40, 1, 120);
 }
 /* ========================================================================= */
-void SoftwareSpeaker::serial_answear()
+void SoftwareSpeaker::serial_answer()
 {
 	this->speaker_voice(80, 1, 500);
 }
