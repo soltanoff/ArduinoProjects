@@ -3,8 +3,9 @@
 #define GSM_H
 /* ========================================================================= */
 #include "Arduino.h"
+#include "speaker.h"
+#include <ArduinoSTL.h>
 #include <avr/pgmspace.h>
-// #include "speaker.h"
 #include <SoftwareSerial.h>
 /* ========================================================================= */
 #define DEFAULT_RX 10
@@ -15,20 +16,21 @@
 #define NOT_OK 2
 #define TIMEOUT 3
 
-
-#define FF(str) String(str).c_str()
-
 void viewFreeMemory();
 /* ========================================================================= */
+#define FF(str) String(str).c_str()
+typedef std::string buffer;
+
+
 class SoftwareGSM
 {
 private:
-	// SoftwareSpeaker *_speaker;
-	String _serial_buf;
-	// String _reply;
+	SoftwareSpeaker *_speaker;
+	buffer* _serial_buf;
 	bool _is_server_connect;
 
-	void A6_read();
+	void cfg();
+	void A6_read(String& retry);
 	byte A6_wait_for(
 		const char* response1,
 		const char* response2,
@@ -43,10 +45,13 @@ private:
 	);
 
 	bool wait_answer(const char* command);
-	void remove(String& str, char symbol);
+	void remove(buffer& str, char symbol);
+	void replace(
+	    buffer& subject,
+	    const buffer& search,
+	    const buffer& replace
+	);
 	void prepare_buf();
-	// void prepare_answer(const char* command);
-	// void read_serial(String &value, SoftwareSerial &serial);
 public:
 	SoftwareSerial *_gsm_serial;
 	SoftwareGSM(
@@ -54,8 +59,8 @@ public:
 		const short& tx = DEFAULT_TX,
 		const long& serial_port = DEFAULT_SERIAL_PORT
 	);
-	void send(String &command);
-	void send_answer(String &answer);
+	void send(buffer& command);
+	void send_answer(buffer& answer);
 	// void send_sms(const char* phone_number, const char* text);
 	// void call_number(const char* phone_number);
 
