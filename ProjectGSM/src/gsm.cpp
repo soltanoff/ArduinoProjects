@@ -1,4 +1,4 @@
-/* ========================================================================= */
+// ============================================================================
 #include "gsm.h"
 
 extern int __bss_end;
@@ -16,7 +16,7 @@ void viewFreeMemory() {
 	Serial.print(F("Free RAM: "));
 	Serial.println(memoryFree());
 }
-/* ========================================================================= */
+// ============================================================================
 SoftwareGSM::SoftwareGSM(
     const short& rx,
     const short& tx,
@@ -32,7 +32,7 @@ SoftwareGSM::SoftwareGSM(
 	// Скорость порта для связи Arduino с GSM модулем
 	this->_gsm_serial->begin(serial_port);
 }
-/* ========================================================================= */
+// ============================================================================
 void SoftwareGSM::cfg() {
     for (short i = 0; i < 5; i++) {
 		this->A6_command(FF(F("AT")), FF(F("OK")), FF(F("yy")), 100, 2);
@@ -43,7 +43,7 @@ void SoftwareGSM::cfg() {
 	this->A6_command(FF(F("AT+SNFS=0")), FF(F("OK")), FF(F("yy")), 10000, 2);
 	this->A6_command(FF(F("ATE0")), FF(F("OK")), FF(F("yy")), 5000, 2);
 }
-/* ========================================================================= */
+// ============================================================================
 /*
 void SoftwareGSM::send_sms(const char* phone_number, const char* text) {
 	this->_gsm_serial->print("AT+CMGS=\"");
@@ -59,7 +59,7 @@ void SoftwareGSM::send_sms(const char* phone_number, const char* text) {
 	// this->_speaker->sms_sending();
 }
 */
-/* ========================================================================= */
+// ============================================================================
 /*
 void SoftwareGSM::call_number(const char* phone_number) {
 	this->_gsm_serial->print("ATD");
@@ -68,7 +68,7 @@ void SoftwareGSM::call_number(const char* phone_number) {
 	this->_gsm_serial->println("ATH");
 }
 */
-/* ========================================================================= */
+// ============================================================================
 void SoftwareGSM::remove(buffer& str, char symbol) {
     auto pos = str.find(symbol);
     while (pos != buffer::npos) {
@@ -92,13 +92,13 @@ void SoftwareGSM::prepare_buf() {
     replace(*_serial_buf, FF(F("\n\n")), FF(F(" | ")));
     remove(*_serial_buf, '\n');
 }
-/* ========================================================================= */
+// ============================================================================
 void SoftwareGSM::A6_read(String& retry) {
 	retry = "";
 	if (this->_gsm_serial->available())
     	retry = this->_gsm_serial->readString();
 }
-/* ========================================================================= */
+// ============================================================================
 byte SoftwareGSM::A6_wait_for(
 	const char* response1,
 	const char* response2,
@@ -132,7 +132,7 @@ byte SoftwareGSM::A6_wait_for(
 	}
 	return retVal;
 }
-/* ========================================================================= */
+// ============================================================================
 byte SoftwareGSM::A6_command(
 	const char* command,
 	const char* response1,
@@ -154,7 +154,7 @@ byte SoftwareGSM::A6_command(
 	}
 	return returnValue;
 }
-/* ========================================================================= */
+// ============================================================================
 void SoftwareGSM::connect_to_server(const char* ip, const char* port) {
 	Serial.println(F("Connect to server..."));
     this->A6_command(FF(F("AT+CIPCLOSE")), FF(F("OK")), FF(F("yy")), 5000, 1);
@@ -190,14 +190,14 @@ void SoftwareGSM::connect_to_server(const char* ip, const char* port) {
 	this->_is_server_connect = true;
 	*/
 }
-/* ========================================================================= */
+// ============================================================================
 void SoftwareGSM::disconnect_server() {
 	this->A6_command(FF(F("AT+CIPSEND=5, \"close\"")), FF(F("OK")), FF(F("yy")), 10000, 2);
 	this->A6_command(FF(F("AT+CIPCLOSE")), FF(F("OK")), FF(F("yy")), 5000, 1);
 	this->_is_server_connect = false;
     this->_speaker->serial_sending();
 }
-/* ========================================================================= */
+// ============================================================================
 void SoftwareGSM::send_answer(buffer& answer) {
 	std::string data;
 
@@ -212,7 +212,7 @@ void SoftwareGSM::send_answer(buffer& answer) {
 
 	this->A6_command(data.c_str(), FF(F("OK")), FF(F("yy")), 10000, 1);
 }
-/* ========================================================================= */
+// ============================================================================
 void SoftwareGSM::send(buffer& command) {
 	if (command.compare(FF(F("dsc"))) == 0 && this->_is_server_connect) {
 		this->disconnect_server(); return;
@@ -234,7 +234,7 @@ void SoftwareGSM::send(buffer& command) {
 		this->_gsm_serial->println(command.c_str());
 	}
 }
-/* ========================================================================= */
+// ============================================================================
 void SoftwareGSM::execute() {
     // =========================
     // Clear SRAM
@@ -268,4 +268,4 @@ void SoftwareGSM::execute() {
 	}
     delete _serial_buf;
 }
-/* ========================================================================= */
+// ============================================================================
