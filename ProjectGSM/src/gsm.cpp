@@ -12,6 +12,7 @@ int memoryFree() {
       freeValue = ((int)&freeValue) - ((int)__brkval);
    return freeValue;
 }
+
 void viewFreeMemory() {
 	Serial.print(F("Free RAM: "));
 	Serial.println(memoryFree());
@@ -34,6 +35,7 @@ SoftwareGSM::SoftwareGSM(
 }
 // ============================================================================
 void SoftwareGSM::cfg() {
+    // this->_gsm_serial->println(FF(F("AT+CFUN?")));
     for (short i = 0; i < 5; i++) {
 		this->A6_command(FF(F("AT")), FF(F("OK")), FF(F("yy")), 100, 2);
 	}
@@ -156,21 +158,24 @@ byte SoftwareGSM::A6_command(
 }
 // ============================================================================
 void SoftwareGSM::connect_to_server(const char* ip, const char* port) {
+    std::string *temp = new std::string;
 	Serial.println(F("Connect to server..."));
     this->A6_command(FF(F("AT+CIPCLOSE")), FF(F("OK")), FF(F("yy")), 5000, 1);
 	this->A6_command(FF(F("AT+CGATT=1")), FF(F("OK")), FF(F("yy")), 10000, 2);
 	// this->A6_command(FF(F("AT+CGACT=1,1")), FF(F("OK")), FF(F("yy")), 10000, 2);
-	*_serial_buf = FF(F("AT+CIPSTART=\"TCP\",\""));
-	*_serial_buf += ip;
-	*_serial_buf += FF(F("\", "));
-	*_serial_buf += port;
-	this->A6_command(_serial_buf->c_str(), FF(F("OK")), FF(F("yy")), 10000, 2);
+
+    *temp = FF(F("AT+CIPSTART=\"TCP\",\""));
+    *temp += ip;
+	*temp += FF(F("\", "));
+	*temp += port;
+	this->A6_command(temp->c_str(), FF(F("OK")), FF(F("yy")), 10000, 2);
 	this->A6_command(FF(F("AT+CIPSEND=1, \"2\"")), FF(F("OK")), FF(F("yy")), 10000, 1);
 
 	this->_is_server_connect = true;
 
     Serial.println(F("Connected"));
     this->_speaker->serial_sending();
+    delete temp;
 	/*
 	this->_gsm_serial->println("AT+CGATT=1"); // // Прикрепиться сети если 1,
 	// открепиться если 0 (длительность: 8 сек)
@@ -199,40 +204,42 @@ void SoftwareGSM::disconnect_server() {
 }
 // ============================================================================
 void SoftwareGSM::send_answer(buffer& answer) {
-	std::string data;
+	std::string *data = new std::string;
 
-	data = FF(F("AT+CIPSEND="));
-	data += FF(answer.size());
-	data += FF(F(",\""));
-	data += answer.c_str();
-	data += FF(F("\""));
+	*data = FF(F("AT+CIPSEND="));
+	*data += FF(answer.size());
+	*data += FF(F(",\""));
+	*data += answer.c_str();
+	*data += FF(F("\""));
 
 	Serial.print(F("Free RAM: "));
 	Serial.println(memoryFree());
-
-	this->A6_command(data.c_str(), FF(F("OK")), FF(F("yy")), 10000, 1);
+    this->_gsm_serial->println(data->c_str());
+	// this->A6_command(data.c_str(), FF(F("OK")), FF(F("yy")), 10000, 1);
+    delete data;
 }
 // ============================================================================
 void SoftwareGSM::send(buffer& command) {
-	if (command.compare(FF(F("dsc"))) == 0 && this->_is_server_connect) {
+	if (command.compare(FF(F("dsc"))) == 0) { // && this->_is_server_connect) {
 		this->disconnect_server(); return;
 	}
-	if (command.compare(FF(F("cnct"))) == 0) {
+	else if (command.compare(FF(F("cnct"))) == 0) {
 		this->connect_to_server(FF(F("31.207.67.22")), FF(F("8082"))); return;
 	}
-    if (command.compare(FF(F("cfg"))) == 0) {
+    else if (command.compare(FF(F("cfg"))) == 0) {
 		this->cfg(); return;
 	}
-    if (command.compare(FF(F("rr"))) == 0) {
-		this->_gsm_serial->println(FF(F("AT+CFUN?"))); return;
-	}
-
-	if (this->_is_server_connect) {
-		this->_gsm_serial->println(FF(F("")));
-	}
-	else {
-		this->_gsm_serial->println(command.c_str());
-	}
+    // else if (command.compare(FF(F("rr"))) == 0) {
+	// 	this->_gsm_serial->println(FF(F("AT+CFUN?"))); return;
+	// }
+    else
+        this->_gsm_serial->println(command.c_str());
+	// if (this->_is_server_connect) {
+	// 	this->_gsm_serial->println(FF(F("")));
+	// }
+	// else {
+	// 	this->_gsm_serial->println(command.c_str());
+	// }
 }
 // ============================================================================
 void SoftwareGSM::execute() {
