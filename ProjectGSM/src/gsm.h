@@ -24,12 +24,27 @@ typedef std::string buffer;
 
 class SoftwareGSM
 {
+public:
+	SoftwareSerial *_gsm_serial;
+	SoftwareGSM(
+		const short& rx = DEFAULT_RX,
+		const short& tx = DEFAULT_TX,
+		const long& serial_port = DEFAULT_SERIAL_PORT
+	);
+	void send(buffer& command);
+	void send_answer(buffer& answer);
+	// void send_sms(const char* phone_number, const char* text);
+	// void call_number(const char* phone_number);
+	void cfg();
+	void connect_to_server(const char* ip, const char* port);
+	void disconnect_server();
+
+	void execute();
 private:
 	SoftwareSpeaker *_speaker;
 	buffer* _serial_buf;
 	bool _is_server_connect;
 
-	void cfg();
 	void A6_read(String& retry);
 	byte A6_wait_for(
 		const char* response1,
@@ -52,22 +67,6 @@ private:
 	    const buffer& replace
 	);
 	void prepare_buf();
-public:
-	SoftwareSerial *_gsm_serial;
-	SoftwareGSM(
-		const short& rx = DEFAULT_RX,
-		const short& tx = DEFAULT_TX,
-		const long& serial_port = DEFAULT_SERIAL_PORT
-	);
-	void send(buffer& command);
-	void send_answer(buffer& answer);
-	// void send_sms(const char* phone_number, const char* text);
-	// void call_number(const char* phone_number);
-
-	void connect_to_server(const char* ip, const char* port);
-	void disconnect_server();
-
-	void execute();
 };
 // ============================================================================
 #endif /* GSM_H */
