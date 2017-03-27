@@ -84,19 +84,27 @@ bool CServer::is_gsm_client(const SOCKET& AcceptSocket, const int& client_number
 }
 
 void CServer::connect_user(const SOCKET& AcceptSocket, const sockaddr_in& ClientInfo, const std::uint32_t& count) {
-    std::cout << "[SERVER] Client #"
-              << count + 1
-              << " connected. "
-              << inet_ntoa(ClientInfo.sin_addr) << std::endl;
+    try {
+        std::cout << "[SERVER] Client #"
+                  << count + 1
+                  << " connected. "
+                  << inet_ntoa(ClientInfo.sin_addr) << std::endl;
 
-    // std::thread* thread = new std::thread(thread_routine, count, AcceptSocket);
-    std::shared_ptr<std::thread> thread(
-            new std::thread(thread_routine, count, AcceptSocket, is_gsm_client(AcceptSocket, count))
-    );
+        // std::thread* thread = new std::thread(thread_routine, count, AcceptSocket);
+        std::shared_ptr<std::thread> thread(
+                new std::thread(thread_routine, count, AcceptSocket, is_gsm_client(AcceptSocket, count))
+        );
 
-    _client_ips.push_back(inet_ntoa(ClientInfo.sin_addr));
-    _client_sockets.push_back(AcceptSocket);
-    _client_threads.push_back(thread);
+        _client_ips.push_back(inet_ntoa(ClientInfo.sin_addr));
+        _client_sockets.push_back(AcceptSocket);
+        _client_threads.push_back(thread);
+    }
+    catch (std::exception e) {
+        std::cout << "[ERROR] CServer::connect_user(): " << e.what() << std::endl;
+    }
+    catch (...) {
+        std::cout << "[ERROR] Server get error in CServer::connect_user().\n";
+    }
 }
 
 int CServer::try_open_socket() {
@@ -133,6 +141,11 @@ int CServer::exec() {
 
             connect_user(AcceptSocket, ClientInfo, count);
             count++;
+        }
+        catch (std::exception e) {
+            std::cout << "[ERROR] CServer::exec(): " << e.what() << std::endl;
+            close();
+            return 0;
         }
         catch (...){
             std::cout << "[ERROR] Server get error in CServer::exec().\n";
