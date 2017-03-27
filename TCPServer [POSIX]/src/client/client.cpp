@@ -73,8 +73,15 @@ void CClient::send_command() {
 }
 
 bool CClient::get_answer(int& bytesRecv, char* answer) {
+    bytesRecv = (int)recv(m_socket, answer, (size_t) ServerCfg::BUFF_SIZE, 0); // MSG_WAITALL)
+    if (bytesRecv >= 1024) {
+        char recvbuf[ServerCfg::BUFF_SIZE] = "";
+        while(recv(m_socket, recvbuf, (size_t) ServerCfg::BUFF_SIZE, MSG_DONTWAIT) >= 1024) {
+            strcat(answer, recvbuf);
+            strcpy(recvbuf, "");
+        }
+    }
 
-    bytesRecv = (int)recv(m_socket, answer, (size_t) ServerCfg::BUFF_SIZE, MSG_WAITALL);
     if (bytesRecv == 0) {
         std::cout << "[CLIENT] Connection closed.\n";
         throw 0;
@@ -83,6 +90,7 @@ bool CClient::get_answer(int& bytesRecv, char* answer) {
         std::cout << "[CLIENT] Connection lost.\n";
         throw 0;
     }
+    std::cout << "BYTESRECV: " << bytesRecv << std::endl;
     return true;
 }
 
@@ -141,12 +149,12 @@ int CClient::try_open_socket() {
 
 int CClient::exec() {
     int bytesRecv = SOCKET_ERROR;
-    char recvbuf[ServerCfg::BUFF_SIZE] = "";
+    // char recvbuf[ServerCfg::BUFF_SIZE] = "";
 
     while (true) {
+        char recvbuf[ServerCfg::BUFF_SIZE] = "";
         try {
             get_answer(bytesRecv, recvbuf);
-
             std::cout << "[SERVER] Bytes recv: " << bytesRecv << " > \n" << recvbuf << "\n";
             send_command();
         }
