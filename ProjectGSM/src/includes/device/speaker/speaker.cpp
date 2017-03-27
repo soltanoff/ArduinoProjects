@@ -1,5 +1,5 @@
 // ============================================================================
-#include "speaker.h"
+#include "./includes/device/speaker/speaker.h"
 // ============================================================================
 void SoftwareSpeaker::speaker_voice(int time, int iteration, int frequency)
 {
