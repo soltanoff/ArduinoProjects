@@ -22,7 +22,7 @@ namespace ServerCfg {
     const std::uint16_t PORT = 8082;
     const std::uint16_t PROTOCOL = IPPROTO_TCP;
     const std::uint16_t BACKLOG = 1;
-    const std::uint16_t BUFF_SIZE = 1024;
+    const std::uint16_t BUFF_SIZE = 4056;
     // Database
     const std::string DB_ADDRESS = "127.0.0.1";
     const std::string DATABASE = "logger";
