@@ -1,5 +1,5 @@
 // ============================================================================
-#include "mouse.h"
+#include "./includes/device/mouse/mouse.h"
 // ============================================================================
 void MouseParser::OnMouseMove(MOUSEINFO *mi) {
     SerialUSB.print(F("dx = "));
