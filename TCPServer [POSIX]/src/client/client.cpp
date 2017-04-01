@@ -49,6 +49,14 @@ void CClient::send_command() {
         COMMANDS cmd_code;
         if (cmd == "help")
             cmd_code = COMMANDS::help;
+        else if (cmd == "test")
+            cmd_code = COMMANDS::test;
+        else if (cmd == "rr")
+            cmd_code = COMMANDS::rr;
+        else if (cmd == "get_buf")
+            cmd_code = COMMANDS::get_buf;
+        else if (cmd == "command")
+            cmd_code = COMMANDS::command;
         else if (cmd == "store")
             cmd_code = COMMANDS::store;
         else if (cmd == "get_all")
