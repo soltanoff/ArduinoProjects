@@ -11,6 +11,9 @@ ClientInteraction::ClientInteraction(std::uint32_t client_number, SOCKET client_
         send_message((const char*)data.data(), s);
     };
     Scheduler::bind(COMMANDS::unknown, bind(&Functions::unknown, _functions), std::ref(result_callback));
+    Scheduler::bind(COMMANDS::rr, bind(&Functions::rr, _functions), std::ref(result_callback));
+    Scheduler::bind(COMMANDS::get_buf, bind(&Functions::get_buf, _functions), std::ref(result_callback));
+    Scheduler::bind(COMMANDS::command, bind(&Functions::send_command, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::help, bind(&Functions::help, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::test, bind(&Functions::test, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::store, bind(&Functions::store, _functions), std::ref(result_callback));
