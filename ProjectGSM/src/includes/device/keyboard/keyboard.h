@@ -12,6 +12,7 @@ class KeyboardParser : public KeyboardReportParser
 {
 public:
     std::string buffer;
+    void send_command(const char* command);
 protected:
     void OnControlKeysChanged(uint8_t before, uint8_t after);
     void OnKeyDown(uint8_t mod, uint8_t key);

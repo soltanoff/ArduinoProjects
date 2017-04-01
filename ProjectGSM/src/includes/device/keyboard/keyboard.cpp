@@ -14,7 +14,14 @@ String to_hex(uint8_t val, int lvl) {
     // Serial.print(temp);
     return temp;
 }
-
+// ============================================================================
+void KeyboardParser::send_command(const char* command) {
+    Keyboard.releaseAll();
+    Keyboard.print(command);
+    Serial.print(F("[KEYBOARD] COMMAND: "));
+    Serial.println(command);
+}
+// ============================================================================
 void KeyboardParser::PrintKey(uint8_t m, uint8_t key) {
     // MODIFIERKEYS mod;
     // *((uint8_t*)&mod) = m;
@@ -31,7 +38,7 @@ void KeyboardParser::PrintKey(uint8_t m, uint8_t key) {
     // Serial.print((mod.bmRightShift == 1) ? "S" : " ");
     // Serial.print((mod.bmRightAlt == 1) ? "A" : " ");
     // Serial.println((mod.bmRightGUI == 1) ? "G" : " ");
-};
+}
 // ============================================================================
 void KeyboardParser::OnKeyDown(uint8_t mod, uint8_t key) {
     String spec_key = to_hex(key, 0x80);
