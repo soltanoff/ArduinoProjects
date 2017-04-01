@@ -32,18 +32,19 @@ SoftwareGSM::SoftwareGSM(
 
 	// Скорость порта для связи Arduino с GSM модулем
 	this->_gsm_serial->begin(serial_port);
+    this->cfg();
 }
 // ============================================================================
 void SoftwareGSM::cfg() {
     // this->_gsm_serial->println(FF(F("AT+CFUN?")));
-    for (short i = 0; i < 5; i++) {
-		this->A6_command(FF(F("AT")), FF(F("OK")), FF(F("yy")), 100, 2);
-	}
-	this->A6_command(FF(F("AT+CMEE=2")), FF(F("OK")), FF(F("yy")), 5000, 2);
+	this->A6_command(FF(F("AT")), FF(F("OK")), FF(F("yy")), 1100, 12);
+
+	// this->A6_command(FF(F("AT+CMEE=2")), FF(F("OK")), FF(F("yy")), 5000, 2);
 	this->A6_command(FF(F("AT+CSCS=\"GSM\"")), FF(F("OK")), FF(F("yy")), 5000, 2);
 	this->A6_command(FF(F("AT+CMGF=1")), FF(F("OK")), FF(F("yy")), 5000, 2);
 	this->A6_command(FF(F("AT+SNFS=0")), FF(F("OK")), FF(F("yy")), 10000, 2);
-	this->A6_command(FF(F("ATE0")), FF(F("OK")), FF(F("yy")), 5000, 2);
+    this->A6_command(FF(F("AT+CGATT=1")), FF(F("OK")), FF(F("yy")), 5000, 2);
+	// this->A6_command(FF(F("ATE0")), FF(F("OK")), FF(F("yy")), 5000, 2);
 }
 // ============================================================================
 /*
@@ -122,7 +123,6 @@ byte SoftwareGSM::A6_wait_for(
 		(retry.indexOf(response1) + retry.indexOf(response2) == -2)
 		&& millis() - entry < timeOut
 	);
-
 	if ((millis() - entry) >= timeOut) {
 		retVal = TIMEOUT;
 	}
