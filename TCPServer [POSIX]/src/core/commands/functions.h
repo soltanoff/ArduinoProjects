@@ -5,7 +5,9 @@
 #include "../../config/config.h"
 #include <memory>
 /* ================================================================================================================== */
-
+#define RR_MSG_FLAG "!rr"
+#define GET_MSG_FLAG "!get"
+#define SEND_MSG_FLAG "!send: "
 
 class Functions
 {
@@ -18,6 +20,12 @@ public:
     // COMMAND FUNCTIONS
     // cmd: None
     void unknown(DataVector arg, FuncArg result_cb, SOCKET s);
+    // cmd: rr
+    void rr(DataVector arg, FuncArg result_cb, SOCKET s);
+    // cmd: get_buf
+    void get_buf(DataVector arg, FuncArg result_cb, SOCKET s);
+    // cmd: send_command <args>
+    void send_command(DataVector arg, FuncArg result_cb, SOCKET s);
     // cmd: help
     void help(DataVector arg, FuncArg result_cb, SOCKET s);
     // cmd: test

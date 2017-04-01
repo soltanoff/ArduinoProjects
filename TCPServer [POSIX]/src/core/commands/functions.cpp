@@ -23,17 +23,23 @@ void Functions::unknown(DataVector arg, FuncArg result_cb, SOCKET s) {
 
 // cmd: help
 void Functions::help(DataVector arg, FuncArg result_cb, SOCKET s) {
-    std::string str = {"\nAvailable commands:\n"
-                        "> test [{arg}] \t\t - function of the test. Return message.\n"
-                        "> store {arg} \t\t - method of storing in DB send {args}.\n"
-                        "> get_all \t\t\t - get all stored messages.\n"
-                        "> get_read \t\t\t - get all read messages.\n"
-                        "> get_unread \t\t - get all unread messages.\n"
-                        "> set_read_all \t\t - set all messages as read.\n"
-                        "> clear_db \t\t\t - set all messages as deleted.\n"};
+    std::string str = {
+            "\nAvailable commands:\n"
+                    "> test [{arg}] \t\t - function of the test. Return message.\n"
+                    "> rr \t\t\t\t - method of restarting GSM device.\n"
+                    "> get_buf \t\t\t - method of getting data from GSM device buffer.\n"
+                    "> command {arg} - method of sending commands to GSM device.\n"
+                    "> store {arg} \t\t - method of storing in DB send {args}.\n"
+                    "> get_all \t\t\t - get all stored messages.\n"
+                    "> get_read \t\t\t - get all read messages.\n"
+                    "> get_unread \t\t - get all unread messages.\n"
+                    "> set_read_all \t\t - set all messages as read.\n"
+                    "> clear_db \t\t\t - set all messages as deleted.\n"
+    };
     result_cb(std::vector<std::uint8_t>(str.begin(), str.end() + 1), s);
 }
 
+extern std::vector<SOCKET> GSM_MODULES_SOCKETS;
 // cmd: test
 void Functions::test(DataVector arg, FuncArg result_cb, SOCKET s) {
     std::string str_arg(arg.begin(), arg.end());
@@ -44,6 +50,54 @@ void Functions::test(DataVector arg, FuncArg result_cb, SOCKET s) {
         std::cout << "foo() executed. arg = " << str_arg << std::endl;
 
     std::string str = {" > this is a test method"};
+
+    for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
+        send(*it, "!send: TEEEST", strlen("!send: TEEEST"), 0);
+    }
+    result_cb(DataVector(str.begin(), str.end() + 1), s);
+}
+
+// cmd: rr
+void Functions::rr(DataVector arg, FuncArg result_cb, SOCKET s) {
+    std::string str_arg(arg.begin(), arg.end());
+
+    std::string str = " > executed";
+
+    for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
+        send(*it, RR_MSG_FLAG, strlen(RR_MSG_FLAG), 0);
+    }
+    result_cb(DataVector(str.begin(), str.end() + 1), s);
+}
+
+// cmd: get_buf
+void Functions::get_buf(DataVector arg, FuncArg result_cb, SOCKET s) {
+    std::string str_arg(arg.begin(), arg.end());
+
+    std::string str = " > executed";
+
+    for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
+        send(*it, GET_MSG_FLAG, strlen(GET_MSG_FLAG), 0);
+    }
+    result_cb(DataVector(str.begin(), str.end() + 1), s);
+}
+
+// cmd: send_command <args>
+void Functions::send_command(DataVector arg, FuncArg result_cb, SOCKET s) {
+    std::string str_arg(arg.begin(), arg.end());
+
+    std::string str;
+    if (!str_arg.empty()) {
+        std::string data = SEND_MSG_FLAG;
+        data += str_arg;
+
+        for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
+            send(*it, data.c_str(), data.length(), 0);
+        }
+        str = " > executed";
+    }
+    else
+        str = "not enough arguments.";
+
     result_cb(DataVector(str.begin(), str.end() + 1), s);
 }
 
