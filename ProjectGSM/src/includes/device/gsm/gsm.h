@@ -15,19 +15,12 @@
 #define OK 1
 #define NOT_OK 2
 #define TIMEOUT 3
-
-#define MSG_FLAG "+CIEV: \"MESSAGE\""
-#define IP_MSG_FLAG "!ip: "
-#define RR_MSG_FLAG "!rr"
-#define GET_MSG_FLAG "!get"
-#define NPOSE std::string::npos
-
+// ============================================================================
 void viewFreeMemory();
 // ============================================================================
 #define FF(str) String(str).c_str()
 typedef std::string buffer;
-
-
+// ============================================================================
 class SoftwareGSM
 {
 public:
