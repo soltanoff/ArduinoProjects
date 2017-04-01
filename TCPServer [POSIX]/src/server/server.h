@@ -4,6 +4,7 @@
 #include "../core/clientinteraction.h"
 #include "../core/connection.h"
 /* ================================================================================================================== */
+extern std::vector<SOCKET> GSM_MODULES_SOCKETS;
 enum class CLIENT_TYPES : std::uint32_t {
     simple=1,
     gsm

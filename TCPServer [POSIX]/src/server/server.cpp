@@ -1,5 +1,5 @@
 #include "server.h"
-
+std::vector<SOCKET> GSM_MODULES_SOCKETS;
 
 void thread_routine(std::uint32_t client_number, SOCKET client_socket, bool is_gsm) {
     ClientInteraction client(client_number, client_socket, is_gsm);
@@ -71,6 +71,7 @@ bool CServer::is_gsm_client(const SOCKET& AcceptSocket, const int& client_number
         std::uint32_t id = (std::uint32_t) std::stoi(recvbuf);
         switch (id){
             case (std::uint32_t) CLIENT_TYPES::gsm:
+                GSM_MODULES_SOCKETS.push_back(AcceptSocket);
                 return true;
             case (std::uint32_t) CLIENT_TYPES::simple:
                 return false;
