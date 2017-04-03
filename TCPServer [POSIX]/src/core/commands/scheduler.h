@@ -10,17 +10,18 @@
 /* ================================================================================================================== */
 enum class COMMANDS : std::uint32_t {
     unknown=0,
-    rr,
-    get_buf,
-    command,
     help,
     test,
-    store,
+    device,
+    command,
+    clear_db,
     get_all,
+    get_buf,
     get_read,
     get_unread,
+    rr,
     set_read_all,
-    clear_db
+    store,
 };
 /* ================================================================================================================== */
 
