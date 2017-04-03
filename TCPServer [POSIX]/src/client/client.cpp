@@ -55,6 +55,8 @@ void CClient::send_command() {
             cmd_code = COMMANDS::rr;
         else if (cmd == "get_buf")
             cmd_code = COMMANDS::get_buf;
+        else if (cmd == "device")
+            cmd_code = COMMANDS::device;
         else if (cmd == "command")
             cmd_code = COMMANDS::command;
         else if (cmd == "store")
@@ -163,7 +165,8 @@ int CClient::exec() {
         char recvbuf[ServerCfg::BUFF_SIZE] = "";
         try {
             get_answer(bytesRecv, recvbuf);
-            std::cout << "[SERVER] Bytes recv: " << bytesRecv << " > \n" << recvbuf << "\n";
+            // std::cout << "[SERVER] Bytes recv: " << bytesRecv << " > \n" << recvbuf << "\n";
+            std::cout << "[SERVER] > " << recvbuf << "\n";
             send_command();
         }
         catch (int){
