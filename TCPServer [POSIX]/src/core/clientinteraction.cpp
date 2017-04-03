@@ -11,17 +11,19 @@ ClientInteraction::ClientInteraction(std::uint32_t client_number, SOCKET client_
         send_message((const char*)data.data(), s);
     };
     Scheduler::bind(COMMANDS::unknown, bind(&Functions::unknown, _functions), std::ref(result_callback));
-    Scheduler::bind(COMMANDS::rr, bind(&Functions::rr, _functions), std::ref(result_callback));
-    Scheduler::bind(COMMANDS::get_buf, bind(&Functions::get_buf, _functions), std::ref(result_callback));
-    Scheduler::bind(COMMANDS::command, bind(&Functions::send_command, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::help, bind(&Functions::help, _functions), std::ref(result_callback));
+
     Scheduler::bind(COMMANDS::test, bind(&Functions::test, _functions), std::ref(result_callback));
-    Scheduler::bind(COMMANDS::store, bind(&Functions::store, _functions), std::ref(result_callback));
+    Scheduler::bind(COMMANDS::command, bind(&Functions::send_command, _functions), std::ref(result_callback));
+    Scheduler::bind(COMMANDS::clear_db, bind(&Functions::clear_db, _functions), std::ref(result_callback));
+    Scheduler::bind(COMMANDS::device, bind(&Functions::check_device, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::get_all, bind(&Functions::get_all, _functions), std::ref(result_callback));
+    Scheduler::bind(COMMANDS::get_buf, bind(&Functions::get_buf, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::get_read, bind(&Functions::get_read, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::get_unread, bind(&Functions::get_unread, _functions), std::ref(result_callback));
+    Scheduler::bind(COMMANDS::rr, bind(&Functions::rr, _functions), std::ref(result_callback));
     Scheduler::bind(COMMANDS::set_read_all, bind(&Functions::set_read_all, _functions), std::ref(result_callback));
-    Scheduler::bind(COMMANDS::clear_db, bind(&Functions::clear_db, _functions), std::ref(result_callback));
+    Scheduler::bind(COMMANDS::store, bind(&Functions::store, _functions), std::ref(result_callback));
 }
 
 bool ClientInteraction::get_answer(std::int32_t& bytesRecv, char* answer) {
