@@ -26,15 +26,16 @@ void Functions::help(DataVector arg, FuncArg result_cb, SOCKET s) {
     std::string str = {
             "\nAvailable commands:\n"
                     "> test [{arg}] \t\t - function of the test. Return message.\n"
-                    "> rr \t\t\t\t - method of restarting GSM device.\n"
-                    "> get_buf \t\t\t - method of getting data from GSM device buffer.\n"
-                    "> command {arg} - method of sending commands to GSM device.\n"
-                    "> store {arg} \t\t - method of storing in DB send {args}.\n"
+                    "> device \t\t\t - method of checking the connection of the GSM device.\n"
+                    "> command {arg} \t - method of sending commands to GSM device.\n"
+                    "> clear_db \t\t\t - set all messages as deleted.\n"
                     "> get_all \t\t\t - get all stored messages.\n"
+                    "> get_buf \t\t\t - method of getting data from GSM device buffer.\n"
                     "> get_read \t\t\t - get all read messages.\n"
                     "> get_unread \t\t - get all unread messages.\n"
+                    "> rr \t\t\t\t - method of restarting GSM device.\n"
                     "> set_read_all \t\t - set all messages as read.\n"
-                    "> clear_db \t\t\t - set all messages as deleted.\n"
+                    "> store {arg} \t\t - method of storing in DB send {args}.\n"
     };
     result_cb(std::vector<std::uint8_t>(str.begin(), str.end() + 1), s);
 }
@@ -62,10 +63,14 @@ void Functions::rr(DataVector arg, FuncArg result_cb, SOCKET s) {
     std::string str_arg(arg.begin(), arg.end());
 
     std::string str = " > executed";
-
-    for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
-        send(*it, RR_MSG_FLAG, strlen(RR_MSG_FLAG), 0);
+    if (GSM_MODULES_SOCKETS.size() > 0) {
+        for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
+            send(*it, RR_MSG_FLAG, strlen(RR_MSG_FLAG), 0);
+        }
     }
+    else
+        str = " > Command not available. Device NOT connected to server!";
+
     result_cb(DataVector(str.begin(), str.end() + 1), s);
 }
 
@@ -74,10 +79,14 @@ void Functions::get_buf(DataVector arg, FuncArg result_cb, SOCKET s) {
     std::string str_arg(arg.begin(), arg.end());
 
     std::string str = " > executed";
-
-    for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
-        send(*it, GET_MSG_FLAG, strlen(GET_MSG_FLAG), 0);
+    if (GSM_MODULES_SOCKETS.size() > 0) {
+        for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
+            send(*it, GET_MSG_FLAG, strlen(GET_MSG_FLAG), 0);
+        }
     }
+    else
+        str = " > Command not available. Device NOT connected to server!";
+
     result_cb(DataVector(str.begin(), str.end() + 1), s);
 }
 
@@ -86,17 +95,33 @@ void Functions::send_command(DataVector arg, FuncArg result_cb, SOCKET s) {
     std::string str_arg(arg.begin(), arg.end());
 
     std::string str;
-    if (!str_arg.empty()) {
-        std::string data = SEND_MSG_FLAG;
-        data += str_arg;
-
-        for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
-            send(*it, data.c_str(), data.length(), 0);
-        }
-        str = " > executed";
+    if (GSM_MODULES_SOCKETS.size() > 0) {
+        if (!str_arg.empty()) {
+            std::string data = SEND_MSG_FLAG;
+            data += str_arg;
+            for (auto it = GSM_MODULES_SOCKETS.begin(); it != GSM_MODULES_SOCKETS.end(); it++) {
+                send(*it, data.c_str(), data.length(), 0);
+            }
+            str = " > executed";
+        } else
+            str = "not enough arguments.";
     }
     else
-        str = "not enough arguments.";
+        str = " > Command not available. Device NOT connected to server!";
+
+    result_cb(DataVector(str.begin(), str.end() + 1), s);
+}
+
+// cmd: check_device
+void Functions::check_device(DataVector arg, FuncArg result_cb, SOCKET s) {
+    std::string str_arg(arg.begin(), arg.end());
+
+    std::string str;
+
+    if (GSM_MODULES_SOCKETS.size() > 0)
+        str = " > device connected: Ai Thinker Co.LTDA6 V03.03.20160830011H03";
+    else
+        str = " > device NOT connected to server!";
 
     result_cb(DataVector(str.begin(), str.end() + 1), s);
 }

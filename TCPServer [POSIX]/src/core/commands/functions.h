@@ -26,6 +26,8 @@ public:
     void get_buf(DataVector arg, FuncArg result_cb, SOCKET s);
     // cmd: send_command <args>
     void send_command(DataVector arg, FuncArg result_cb, SOCKET s);
+    // cmd: check_device
+    void check_device(DataVector arg, FuncArg result_cb, SOCKET s);
     // cmd: help
     void help(DataVector arg, FuncArg result_cb, SOCKET s);
     // cmd: test
