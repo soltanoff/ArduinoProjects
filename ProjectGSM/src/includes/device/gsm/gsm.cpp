@@ -24,8 +24,6 @@ SoftwareGSM::SoftwareGSM(
     const long& serial_port
 ) {
 	this->_speaker = new SoftwareSpeaker();
-	this->_speaker->module_initional();
-	// delay(1000);
 
 	this->_is_server_connect = false;
 	this->_gsm_serial = new SoftwareSerial(rx, tx);
@@ -33,6 +31,7 @@ SoftwareGSM::SoftwareGSM(
 	// Скорость порта для связи Arduino с GSM модулем
 	this->_gsm_serial->begin(serial_port);
     this->cfg();
+    this->_speaker->module_initional();
 }
 // ============================================================================
 void SoftwareGSM::cfg() {
@@ -162,7 +161,6 @@ void SoftwareGSM::connect_to_server(const char* ip, const char* port) {
 	Serial.println(F("Connect to server..."));
     this->A6_command(FF(F("AT+CIPCLOSE")), FF(F("OK")), FF(F("yy")), 5000, 1);
 	this->A6_command(FF(F("AT+CGATT=1")), FF(F("OK")), FF(F("yy")), 10000, 2);
-	// this->A6_command(FF(F("AT+CGACT=1,1")), FF(F("OK")), FF(F("yy")), 10000, 2);
 
     *temp = FF(F("AT+CIPSTART=\"TCP\",\""));
     *temp += ip;
@@ -220,46 +218,7 @@ void SoftwareGSM::send_answer(buffer& answer) {
 }
 // ============================================================================
 void SoftwareGSM::send(buffer& command) {
-	// if (command.compare(FF(F("dsc"))) == 0) { // && this->_is_server_connect) {
-	// 	this->disconnect_server(); return;
-	// }
-	// else if (command.compare(FF(F("cnct"))) == 0) {
-	// 	this->connect_to_server(FF(F("31.207.67.22")), FF(F("8082"))); return;
-	// }
-    // else if (command.compare(FF(F("cfg"))) == 0) {
-	// 	this->cfg(); return;
-	// }
-    // // else if (command.compare(FF(F("rr"))) == 0) {
-	// // 	this->_gsm_serial->println(FF(F("AT+CFUN?"))); return;
-	// // }
-    // else
     this->_gsm_serial->println(command.c_str());
-
-	// if (this->_is_server_connect) {
-	// 	this->_gsm_serial->println(FF(F("")));
-	// }
-	// else {
-	// 	this->_gsm_serial->println(command.c_str());
-	// }
-}
-// ============================================================================
-void SoftwareGSM::module_control(buffer& command) {
-    // if (command.compare(0, strlen(MSG_FLAG), MSG_FLAG) == 0) {
-    //     if (command.find(IP_MSG_FLAG) != NPOSE) {
-    //         this->connect_to_server(
-    //             command.substr(
-    //                 command.find(IP_MSG_FLAG) + strlen(IP_MSG_FLAG)
-    //             ).c_str(),
-    //             FF(F("8082"))
-    //         );
-    //     }
-    //     else if (command.find(RR_MSG_FLAG) != NPOSE) {
-    //         this->cfg();
-    //     }
-    //     else if (command.find(GET_MSG_FLAG) != NPOSE) {
-    //         Traffic::send()
-    //     }
-    // } /* end main if */
 }
 // ============================================================================
 void SoftwareGSM::execute(buffer *serial_buf) {
@@ -267,7 +226,7 @@ void SoftwareGSM::execute(buffer *serial_buf) {
     // Clear SRAM
 	Serial.flush();
 	this->_gsm_serial->flush();
-    _serial_buf = serial_buf; // new buffer;
+    _serial_buf = serial_buf;
     // =========================
 	// GSM MODULE SERIAL
 	if (this->_gsm_serial->available()) {
@@ -277,7 +236,6 @@ void SoftwareGSM::execute(buffer *serial_buf) {
 		}
 		this->prepare_buf();
 		Serial.println(_serial_buf->c_str());
-        this->module_control(*_serial_buf);
 		viewFreeMemory();
 		this->_speaker->serial_answer();
 	}
@@ -294,6 +252,5 @@ void SoftwareGSM::execute(buffer *serial_buf) {
 		this->send(*_serial_buf);
 		this->_speaker->serial_sending();
 	}
-    // delete _serial_buf;
 }
 // ============================================================================
