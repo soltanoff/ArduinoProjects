@@ -7,7 +7,7 @@
 class SoftwareSpeaker
 {
 public:
-	SoftwareSpeaker(short pin = 2);
+	SoftwareSpeaker(short pin = 0);
 	void module_initional();
 	// void sms_sending();
 	void serial_sending();
