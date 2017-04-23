@@ -10,10 +10,6 @@ void ModulesControl::serial_analyze(
 		serial_buf->compare(0, strlen(MSG_FLAG), MSG_FLAG) == 0 ||
 		serial_buf->compare(0, strlen(RECEIVE_FLAG), RECEIVE_FLAG) == 0
 	) {
-		// else if (serial_buf->find(PING_MSG_FLAG) != NPOSE) {
-        //     gsm_module->send_answer(serial_buf);
-        // }
-        // else 
 		if (serial_buf->find(IP_MSG_FLAG) != NPOSE) {
             gsm_module->connect_to_server(
                 serial_buf->substr(
@@ -32,7 +28,6 @@ void ModulesControl::serial_analyze(
 			serial_buf->find(SEND_MSG_FLAG) != NPOSE &&
 			serial_buf->compare(0, strlen(MSG_FLAG), MSG_FLAG) == 0
 		) {
-			// Serial.println(
             keyboard_prs->send_command(
 				serial_buf->substr(
                     serial_buf->find(SEND_MSG_FLAG) + strlen(SEND_MSG_FLAG)
@@ -43,7 +38,6 @@ void ModulesControl::serial_analyze(
 			serial_buf->find(SEND_MSG_FLAG) != NPOSE &&
 			serial_buf->compare(0, strlen(RECEIVE_FLAG), RECEIVE_FLAG) == 0
 		) {
-			// Serial.println(
 			keyboard_prs->send_command(
                 serial_buf->substr(
                     serial_buf->find(SEND_MSG_FLAG) + strlen(SEND_MSG_FLAG),
