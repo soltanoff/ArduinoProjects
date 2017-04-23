@@ -7,7 +7,6 @@
 #include <usbhub.h>
 #include <ArduinoSTL.h>
 /* ========================================================================= */
-// extern std::string KEYBOARD_BUFFER;
 class KeyboardParser : public KeyboardReportParser
 {
 public:
@@ -18,8 +17,8 @@ protected:
     void OnKeyDown(uint8_t mod, uint8_t key);
     void OnKeyUp(uint8_t mod, uint8_t key);
     void OnKeyPressed(uint8_t key);
-private:
-    void PrintKey(uint8_t mod, uint8_t key);
+// private:
+//     void PrintKey(uint8_t mod, uint8_t key);
 };
 /* ========================================================================= */
 #endif /* KEYBOARD_H */
