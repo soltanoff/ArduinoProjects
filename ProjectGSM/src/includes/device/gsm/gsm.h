@@ -38,8 +38,6 @@ public:
 	void connect_to_server(const char* ip, const char* port);
 	void disconnect_server();
 
-	void module_control(buffer& command);
-
 	void execute(buffer* serial_buf);
 private:
 	SoftwareSpeaker* _speaker;
