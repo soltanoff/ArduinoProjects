@@ -20,11 +20,12 @@ SoftwareSpeaker::SoftwareSpeaker(short pin)
 {
 	this->_pin = pin;
 	pinMode(this->_pin, OUTPUT);
+	this->speaker_voice(40, 2, 800);
 }
 // ============================================================================
 void SoftwareSpeaker::module_initional()
 {
-	this->speaker_voice(40, 3, 0);
+	this->speaker_voice(40, 3, 500);
 }
 // ============================================================================
 /*
