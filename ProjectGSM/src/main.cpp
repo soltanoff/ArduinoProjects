@@ -15,8 +15,9 @@ void setup() {
 	if (usb.Init() == -1) Serial.println(F("[ERROR] OSC did not start."));
 	hid_keyboard.SetReportParser(0, &keyboard_prs);
 
+	while(!Serial);
+
 	gsm_module = new SoftwareGSM();
-	// gsm->cfg();
 	// gsm->connect_to_server(FF(F("31.207.78.188")), FF(F("8082")));
 
 	Serial.println(F("[GSM] module started."));
