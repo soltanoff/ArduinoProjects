@@ -10,7 +10,6 @@
 #define RR_MSG_FLAG "!rr"
 #define GET_MSG_FLAG "!get"
 #define SEND_MSG_FLAG "!send: "
-// #define PING_MSG_FLAG "!ping"
 #define NPOSE std::string::npos
 // ============================================================================
 class ModulesControl {
