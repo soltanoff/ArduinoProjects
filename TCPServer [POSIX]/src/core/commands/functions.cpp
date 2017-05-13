@@ -19,6 +19,19 @@ std::unique_ptr<CDBConnection> Functions::get_db() {
             ServerCfg::DB_PASSWORD
     );
 }
+// function: get reformat query result
+std::string reformatQueryResult(QueryResultList &records) {
+    std::string separator;
+    std::string result = "\n";
+    for (auto it = records.begin(); it != records.end(); it++) {
+        for (auto col = (*it).begin(); col != (*it).end(); col++) {
+            separator = col == (*it).end() - 1 ? "" : " | ";
+            result += (*col) + separator;
+        }
+        result += "\n";
+    }
+    return result;
+}
 // ====================================================================================================================
 // COMMAND FUNCTIONS
 // cmd: None
@@ -157,15 +170,11 @@ void Functions::get_all(DataVector arg, FuncArg result_cb, SOCKET s) {
     if (arg.empty()) {
         auto db = get_db();
         std::string query = ""
-                "SELECT l.id, l.message "
+                "SELECT l.id, l.date, l.message "
                 "FROM Logger l INNER JOIN State s ON l.id = s.id_logger ";
         QueryResultList records = db->get_record_list(query.c_str());
 
-        for (auto it = records.begin(); it != records.end(); it++) {
-            for (auto col = (*it).begin(); col != (*it).end(); col++)
-                result += (*col) + " ";
-            result += "\n";
-        }
+        result = reformatQueryResult(records);
     }
     else
         result = " > getall execute without arguments";
@@ -186,11 +195,7 @@ void Functions::get_read(DataVector arg, FuncArg result_cb, SOCKET s) {
                 "WHERE s.is_read = 1";
         QueryResultList records = db->get_record_list(query.c_str());
 
-        for (auto it = records.begin(); it != records.end(); it++) {
-            for (auto col = (*it).begin(); col != (*it).end(); col++)
-                result += (*col) + " ";
-            result += "\n";
-        }
+        result = reformatQueryResult(records);
     }
     else
         result = " > get_read execute without arguments";
@@ -212,11 +217,7 @@ void Functions::get_unread(DataVector arg, FuncArg result_cb, SOCKET s) {
 
         QueryResultList records = db->get_record_list(query.c_str());
 
-        for (auto it = records.begin(); it != records.end(); it++) {
-            for (auto col = (*it).begin(); col != (*it).end(); col++)
-                result += (*col) + " ";
-            result += "\n";
-        }
+        result = reformatQueryResult(records);
         query = "UPDATE State SET is_read = 1, modify_date = CURRENT_TIMESTAMP";
         db->query(query.c_str());
     }
