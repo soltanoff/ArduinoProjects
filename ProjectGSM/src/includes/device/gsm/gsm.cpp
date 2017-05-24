@@ -30,8 +30,8 @@ SoftwareGSM::SoftwareGSM(
 
 	// Скорость порта для связи Arduino с GSM модулем
 	this->_gsm_serial->begin(serial_port);
-    this->cfg();
-    this->_speaker->module_initional();
+    // this->cfg();
+    // this->_speaker->module_initional();
 }
 // ============================================================================
 void SoftwareGSM::cfg() {
@@ -44,6 +44,7 @@ void SoftwareGSM::cfg() {
 	this->A6_command(FF(F("AT+SNFS=0")), FF(F("OK")), FF(F("yy")), 10000, 2);
     this->A6_command(FF(F("AT+CGATT=1")), FF(F("OK")), FF(F("yy")), 5000, 2);
 	// this->A6_command(FF(F("ATE0")), FF(F("OK")), FF(F("yy")), 5000, 2);
+    this->_speaker->module_initional();
 }
 // ============================================================================
 /*
