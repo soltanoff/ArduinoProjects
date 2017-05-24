@@ -80,43 +80,45 @@ void KeyboardParser::OnKeyDown(uint8_t mod, uint8_t key) {
 }
 // ============================================================================
 void KeyboardParser::OnControlKeysChanged(uint8_t before, uint8_t after) {
-    // MODIFIERKEYS beforeMod;
-    // *((uint8_t*)&beforeMod) = before;
+    MODIFIERKEYS beforeMod;
+    *((uint8_t*)&beforeMod) = before;
 
-    Keyboard.set_modifiers(after);
+    // Keyboard.set_modifiers(after);
     // HID_SendReport(2, &(Keyboard.send_report()), sizeof(Keyboard.send_report()));
 
     Serial.print(F("[KEYBOARD] OnControlKeysChanged"));
-    // MODIFIERKEYS afterMod;
-    // *((uint8_t*)&afterMod) = after;
-    //
-    // if (beforeMod.bmLeftCtrl != afterMod.bmLeftCtrl) {
-    //     Serial.println("[KEYBOARD] LeftCtrl changed");
-    // }
-    // if (beforeMod.bmLeftShift != afterMod.bmLeftShift) {
-    //     Serial.println("[KEYBOARD] LeftShift changed");
-    // }
-    // if (beforeMod.bmLeftAlt != afterMod.bmLeftAlt) {
-    //     Serial.println("[KEYBOARD] LeftAlt changed");
-    // }
-    // if (beforeMod.bmLeftGUI != afterMod.bmLeftGUI) {
-    //     Serial.println("[KEYBOARD] LeftGUI changed");
-    // }
-    // if (beforeMod.bmRightCtrl != afterMod.bmRightCtrl) {
-    //     Serial.println("[KEYBOARD] RightCtrl changed");
-    // }
-    // if (beforeMod.bmRightShift != afterMod.bmRightShift) {
-    //     Serial.println("[KEYBOARD] RightShift changed");
-    // }
-    // if (beforeMod.bmRightAlt != afterMod.bmRightAlt) {
-    //     Serial.println("[KEYBOARD] RightAlt changed");
-    // }
-    // if (beforeMod.bmRightGUI != afterMod.bmRightGUI) {
-    //     Serial.println("[KEYBOARD] RightGUI changed");
-    // }
+    MODIFIERKEYS afterMod;
+    *((uint8_t*)&afterMod) = after;
+
+    if (beforeMod.bmLeftCtrl != afterMod.bmLeftCtrl) {
+        Serial.println("[KEYBOARD] LeftCtrl changed");
+    }
+    if (beforeMod.bmLeftShift != afterMod.bmLeftShift) {
+        Serial.println("[KEYBOARD] LeftShift changed");
+    }
+    if (beforeMod.bmLeftAlt != afterMod.bmLeftAlt) {
+        Serial.println("[KEYBOARD] LeftAlt changed");
+    }
+    if (beforeMod.bmLeftGUI != afterMod.bmLeftGUI) {
+        Serial.println("[KEYBOARD] LeftGUI changed");
+    }
+    if (beforeMod.bmRightCtrl != afterMod.bmRightCtrl) {
+        Serial.println("[KEYBOARD] RightCtrl changed");
+    }
+    if (beforeMod.bmRightShift != afterMod.bmRightShift) {
+        Serial.println("[KEYBOARD] RightShift changed");
+    }
+    if (beforeMod.bmRightAlt != afterMod.bmRightAlt) {
+        Serial.println("[KEYBOARD] RightAlt changed");
+    }
+    if (beforeMod.bmRightGUI != afterMod.bmRightGUI) {
+        Serial.println("[KEYBOARD] RightGUI changed");
+    }
+    else Serial.println("[KEYBOARD] oops");
 }
 // ============================================================================
 void KeyboardParser::OnKeyUp(uint8_t mod, uint8_t key) {
+    Serial.print(F("[KEYBOARD] releaseAll\n"));
     Keyboard.releaseAll();
 }
 // ============================================================================
