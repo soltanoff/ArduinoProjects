@@ -4,6 +4,7 @@
 SoftwareGSM *gsm_module;
 // ============================================================================
 USB usb;
+// USBHub Hub(&usb);
 HIDBoot<USB_HID_PROTOCOL_KEYBOARD> hid_keyboard(&usb);
 KeyboardParser keyboard_prs;
 // ============================================================================
@@ -15,9 +16,11 @@ void setup() {
 	if (usb.Init() == -1) Serial.println(F("[ERROR] OSC did not start."));
 	hid_keyboard.SetReportParser(0, &keyboard_prs);
 
-	while(!Serial);
+	// while(!Serial);
+	delay(1400);
 
 	gsm_module = new SoftwareGSM();
+	gsm_module->cfg();
 	// gsm->connect_to_server(FF(F("31.207.78.188")), FF(F("8082")));
 
 	Serial.println(F("[GSM] module started."));
