@@ -21,7 +21,7 @@ void setup() {
 
 	gsm_module = new SoftwareGSM();
 	gsm_module->cfg();
-	// gsm->connect_to_server(FF(F("31.207.78.188")), FF(F("8082")));
+	// gsm_module->connect_to_server(FF(F("194.87.111.222")), FF(F("8082")));
 
 	Serial.println(F("[GSM] module started."));
 	viewFreeMemory();
