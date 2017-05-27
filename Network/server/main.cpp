@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
     system("pause");
 #else
     CServer s;
-    CClient s;
     s.start();
 #endif
     return 0;
