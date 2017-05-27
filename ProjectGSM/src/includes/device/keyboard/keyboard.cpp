@@ -20,32 +20,33 @@ void KeyboardParser::send_command(const char* command) {
     Serial.println(command);
 }
 // ============================================================================
-// void KeyboardParser::PrintKey(uint8_t m, uint8_t key) {
-//     MODIFIERKEYS mod;
-//     *((uint8_t*)&mod) = m;
-//     Serial.print((mod.bmLeftCtrl == 1) ? "C" : " ");
-//     Serial.print((mod.bmLeftShift == 1) ? "S" : " ");
-//     Serial.print((mod.bmLeftAlt == 1) ? "A" : " ");
-//     Serial.print((mod.bmLeftGUI == 1) ? "G" : " ");
-//
-//     Serial.print(F(" > "));
-//     Serial.print(to_hex(key, 0x80));
-//     Serial.println(F(" < "));
-//
-//     Serial.print((mod.bmRightCtrl == 1) ? "C" : " ");
-//     Serial.print((mod.bmRightShift == 1) ? "S" : " ");
-//     Serial.print((mod.bmRightAlt == 1) ? "A" : " ");
-//     Serial.println((mod.bmRightGUI == 1) ? "G" : " ");
-// }
+void KeyboardParser::PrintKey(uint8_t m, uint8_t key) {
+    MODIFIERKEYS mod;
+    *((uint8_t*)&mod) = m;
+    Serial.print((mod.bmLeftCtrl == 1) ? "C" : " ");
+    Serial.print((mod.bmLeftShift == 1) ? "S" : " ");
+    Serial.print((mod.bmLeftAlt == 1) ? "A" : " ");
+    Serial.print((mod.bmLeftGUI == 1) ? "G" : " ");
+
+    Serial.print(F(" > "));
+    Serial.print(to_hex(key, 0x80));
+    Serial.println(F(" < "));
+
+    Serial.print((mod.bmRightCtrl == 1) ? "C" : " ");
+    Serial.print((mod.bmRightShift == 1) ? "S" : " ");
+    Serial.print((mod.bmRightAlt == 1) ? "A" : " ");
+    Serial.println((mod.bmRightGUI == 1) ? "G" : " ");
+}
 // ============================================================================
 void KeyboardParser::OnKeyDown(uint8_t mod, uint8_t key) {
     String spec_key = to_hex(key, 0x80);
-    uint8_t c = OemToAscii(mod, key);
+    uint8_t c = OemToAscii(0, key);
 
     // Serial.print(F("DN "));
     // Serial.println(c);
     // this->modifiers = mod;
     // Keyboard.set_modifiers(mod);
+    this->PrintKey(mod, key);
 
     if (c && c != 19)
         OnKeyPressed(c);
@@ -124,6 +125,7 @@ void KeyboardParser::OnKeyUp(uint8_t mod, uint8_t key) {
 // ============================================================================
 void KeyboardParser::OnKeyPressed(uint8_t key) {
     Serial.print(F("[KEYBOARD] ASCII: "));
+
     Serial.println((char)key);
 
     this->buffer += (char)key;

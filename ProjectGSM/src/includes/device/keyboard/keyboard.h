@@ -17,8 +17,8 @@ protected:
     void OnKeyDown(uint8_t mod, uint8_t key);
     void OnKeyUp(uint8_t mod, uint8_t key);
     void OnKeyPressed(uint8_t key);
-// private:
-//     void PrintKey(uint8_t mod, uint8_t key);
+private:
+    void PrintKey(uint8_t mod, uint8_t key);
 };
 /* ========================================================================= */
 #endif /* KEYBOARD_H */
