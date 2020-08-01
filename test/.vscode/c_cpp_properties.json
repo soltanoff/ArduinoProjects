@@ -1,0 +1,57 @@
+{
+    "configurations": [
+        {
+            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/home/pie/ArduinoProjects/test/include",
+                "/home/pie/ArduinoProjects/test/src",
+                "/home/pie/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "/home/pie/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "/home/pie/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+                "/home/pie/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "/home/pie/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "/home/pie/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "/home/pie/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "/home/pie/.platformio/packages/tool-unity",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/pie/ArduinoProjects/test/include",
+                    "/home/pie/ArduinoProjects/test/src",
+                    "/home/pie/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "/home/pie/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "/home/pie/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+                    "/home/pie/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "/home/pie/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "/home/pie/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "/home/pie/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "/home/pie/.platformio/packages/tool-unity",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=40304",
+                "ARDUINO_AVR_PRO",
+                "F_CPU=8000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega168__",
+                ""
+            ],
+            "intelliSenseMode": "clang-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "/home/pie/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega168",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
